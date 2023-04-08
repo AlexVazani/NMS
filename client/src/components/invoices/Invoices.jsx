@@ -12,26 +12,28 @@ import {
 } from "@mui/material";
 import { koKR } from "@mui/material/locale";
 import { Add, Edit, Delete, TaskAlt } from "@mui/icons-material";
-import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 
-import DataGridCustomToolbar from "components/common/DataGridCustomToolbar";
+import DataGridCustomToolbar from "components/invoices/DataGridCustomToolbar";
 import DrawerAdd from "components/invoices/DrawerAdd";
 import DrawerUpdate from "components/invoices/DrawerUpdate";
 import { useGetInvoicesQuery, useDeleteInvoiceMutation } from "state/api";
 
-const Invoices = () => {
-  const apiRef = useGridApiRef();
+const Invoices = ({ projectId }) => {
   const theme = useTheme();
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState(false);
   const [selectedInvoiceData, setSelectedInvoice] = useState(null);
-  const [searchInput, setSearchInput] = useState("");
+  // const [searchInput, setSearchInput] = useState("");
 
-  const [search, setSearch] = useState("");
+  // const [search, setSearch] = useState("");
 
-  const { data: invoiceData, isLoading, refetch } = useGetInvoicesQuery();
+  const {
+    data: invoiceData,
+    isLoading,
+    refetch,
+  } = useGetInvoicesQuery(projectId);
   const [deleteInvoice] = useDeleteInvoiceMutation();
-
   // handle Drawer
   const toggleAddDrawer = () => {
     setIsAddDrawerOpen(!isAddDrawerOpen);
@@ -84,6 +86,9 @@ const Invoices = () => {
       headerName: "프로젝트",
       flex: 2,
       minWidth: 100,
+      valueGetter: (params) => {
+        return params.row.projectId ? params.row.projectId.projectTitle : "";
+      },
     },
     {
       field: "projectProcess",
@@ -109,6 +114,15 @@ const Invoices = () => {
       type: "number",
       flex: 1,
       minWidth: 80,
+    },
+    {
+      field: "invoiceTaxCheck",
+      headerName: "계산서",
+      flex: 1,
+      minWidth: 50,
+      renderCell: (params) => {
+        return params.value ? "발행" : "미발행";
+      },
     },
     {
       field: "paymentType",
@@ -137,6 +151,7 @@ const Invoices = () => {
       headerName: "Actions",
       headerAlign: "center",
       flex: 1.5,
+      minWidth: 100,
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
@@ -170,7 +185,7 @@ const Invoices = () => {
           justifyContent="space-between"
           spacing={2}
         >
-          <Typography variant="h5">Project Invoices</Typography>
+          <Typography variant="h5">프로젝트 품의서</Typography>
           <Button
             variant="outlined"
             onClick={toggleAddDrawer}
@@ -184,7 +199,11 @@ const Invoices = () => {
             open={isAddDrawerOpen}
             onClose={toggleAddDrawer}
           >
-            <DrawerAdd onUpdate={onUpdate} toggleAddDrawer={toggleAddDrawer} />
+            <DrawerAdd
+              projectId={projectId}
+              onUpdate={onUpdate}
+              toggleAddDrawer={toggleAddDrawer}
+            />
           </Drawer>
           <Drawer
             anchor="right"
@@ -219,40 +238,22 @@ const Invoices = () => {
           </Snackbar>
         </Stack>
       </Box>
-      <Box width="100%">
+      <Box width="100%" height="67vh">
         {invoiceData && !isLoading ? (
           <DataGrid
             loading={isLoading || !invoiceData}
-            rows={
-              search
-                ? invoiceData.filter((row) =>
-                    Object.values(row).some((value) =>
-                      String(value).toLowerCase().includes(search.toLowerCase())
-                    )
-                  )
-                : invoiceData
-            }
             getRowId={(row) => row._id}
-            // rowCount={(invoiceData && invoiceData._id) || 0}
+            rows={invoiceData || []}
             columns={columns}
-            autoHeight
             localeText={koKR.components.MuiDataGrid}
             sortModel={[{ field: "createdAt", sort: "desc" }]}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            // checkboxSelection
+            pageSize={10}
+            rowsPerPageOptions={[10, 20, 50, 100]}
+            checkboxSelection
             components={{
-              Toolbar: (props) => (
-                <DataGridCustomToolbar
-                  apiRef={apiRef}
-                  searchInput={searchInput}
-                  setSearchInput={setSearchInput}
-                  setSearch={setSearch}
-                />
-              ),
+              Toolbar: DataGridCustomToolbar,
             }}
             disableSelectionOnClick
-            apiRef={apiRef}
           />
         ) : (
           "Loading"

@@ -47,7 +47,7 @@ export const theme = createTheme({
     },
     secondary: {
       ...themeColor.secondary,
-      main: themeColor.secondary[300],
+      main: themeColor.secondary[500],
     },
     neutral: {
       ...themeColor.grey,
@@ -100,7 +100,9 @@ export const theme = createTheme({
   components: {
     MuiTypography: {
       styleOverrides: {
-        root: {},
+        root: {
+          color: themeColor.grey[500],
+        },
       },
     },
     MuiDialog: {
@@ -126,6 +128,14 @@ export const theme = createTheme({
         },
       },
     },
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          paddingLeft: "8px",
+          paddingRight: "10px",
+        },
+      },
+    },
     MuiLinearProgress: {
       styleOverrides: {
         root: {
@@ -143,11 +153,33 @@ export const theme = createTheme({
         },
       },
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        colorPrimary: {
+          "&.Mui-checked": {
+            color: themeColor.secondary[500],
+          },
+        },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        switchBase: {
+          color: themeColor.primary[400],
+          "&.Mui-checked": {
+            color: themeColor.secondary[400],
+          },
+        },
+      },
+    },
     MuiDataGrid: {
       styleOverrides: {
         root: {
           backgroundColor: "#312D4A",
           borderColor: "#3F3B57",
+          "& .data-grid": {
+            overflowX: "auto",
+          },
         },
         columnHeaders: {
           backgroundColor: "#3D3758",
@@ -159,6 +191,28 @@ export const theme = createTheme({
         },
         withBorderColor: {
           borderColor: "#3F3B57",
+        },
+      },
+    },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          // Add your custom styles here
+          color: "white",
+          "&:hover": {
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+          },
+        },
+        underline: {
+          "&:before": {
+            borderBottom: "1px solid white",
+          },
+          "&:hover:not(.Mui-disabled):before": {
+            borderBottom: "2px solid white",
+          },
+          "&:after": {
+            borderBottom: "2px solid white",
+          },
         },
       },
     },

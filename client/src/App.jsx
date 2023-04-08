@@ -4,6 +4,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { theme } from "theme/avdarkTheme";
 import Layout from "pages/layout";
 import Dashboard from "pages/dashboard";
+import InquiryRoutes from "components/routes/inquiry";
 import ProjectRoutes from "components/routes/project";
 import ReportRoutes from "components/routes/report";
 import InvoiceRoutes from "components/routes/invoice";
@@ -20,6 +21,7 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/inquiries/*" element={<InquiryRoutes />} />
               <Route path="/projects/*" element={<ProjectRoutes />} />
               <Route path="/reports/*" element={<ReportRoutes />} />
               <Route path="/invoices/*" element={<InvoiceRoutes />} />

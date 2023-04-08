@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Box,
   Stack,
@@ -7,66 +7,45 @@ import {
   Grid,
   Typography,
   TextField,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
+  Autocomplete,
   Modal,
   InputAdornment,
   useTheme,
 } from "@mui/material";
-import { Edit, Cancel } from "@mui/icons-material";
+import { Create, Cancel } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
-import { useUpdateProjectMutation } from "state/api";
+import { useCreateInquiryMutation } from "state/api";
 
-const ModalUpdate = ({
-  id,
-  data,
-  open,
-  onUpdate,
-  handleClose,
-  setSnackbarOpen,
-}) => {
+const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
   const {
-    control,
     register,
     handleSubmit,
     formState: { errors },
-    setValue,
+    reset,
   } = useForm();
 
-  const [updateProject, { isLoading }] = useUpdateProjectMutation();
+  const [createInquiry, { isLoading }] = useCreateInquiryMutation();
+
+  const navigate = useNavigate();
   const theme = useTheme();
 
-  // Autocomplete
-  // useEffect(() => {
-  //   setValue("projectStatus", data.projectStatus);
-  // }, [data.projectStatus, setValue]);
+  // Modal function
+  const handleCloseAndReset = () => {
+    handleClose();
+    reset();
+  };
 
-  const projectStatusOption = [
-    "문의상담",
-    "미팅실측",
-    "도면3D",
-    "견적계약",
-    "철거설비",
-    "목공전기",
-    "바닥필름",
-    "도배조명",
-    "가구준공",
-    "추가A/S",
-  ];
+  const salesStatusOption = ["문의상담", "미팅실측", "도면3D", "견적계약"];
 
-  const handleUpdateProject = async (updatedData) => {
+  const handleCreateInquiry = async (data) => {
     try {
-      await updateProject({
-        id: id,
-        data: updatedData,
-      }).unwrap();
+      await createInquiry(data).unwrap();
 
       setSnackbarOpen(true);
-      onUpdate();
+      navigate("/inquiries", { state: { gotoRefetch: true } });
       handleClose();
+      reset();
     } catch (error) {
       console.error(error);
     }
@@ -75,11 +54,11 @@ const ModalUpdate = ({
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={handleCloseAndReset}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <form onSubmit={handleSubmit(handleUpdateProject)}>
+      <form onSubmit={handleSubmit(handleCreateInquiry)}>
         <Box
           sx={{
             position: "absolute",
@@ -101,14 +80,14 @@ const ModalUpdate = ({
               align="center"
               color={theme.palette.secondary[100]}
             >
-              프로젝트 정보 수정
+              영업문의 등록
             </Typography>
             <Typography
               variant="subtitle1"
               align="center"
               color={theme.palette.secondary[300]}
             >
-              프로젝트 및 고객정보를 수정합니다.
+              새 영업문의를 등록합니다.
             </Typography>
           </Stack>
           <Box
@@ -122,13 +101,12 @@ const ModalUpdate = ({
             <Grid container columnSpacing={{ sm: 2, md: 3 }}>
               <Grid item sm={12} md={6}>
                 <TextField
-                  label="프로젝트명"
-                  defaultValue={data.projectTitle}
-                  {...register("projectTitle", {
+                  label="문의명"
+                  {...register("inquiryTitle", {
                     required: "This field is required",
                   })}
-                  error={!!errors.projectTitle}
-                  helperText={errors.projectTitle?.message}
+                  error={!!errors.inquiryTitle}
+                  helperText={errors.inquiryTitle?.message}
                   variant="outlined"
                   margin="normal"
                   fullWidth
@@ -137,7 +115,6 @@ const ModalUpdate = ({
               <Grid item sm={12} md={6}>
                 <TextField
                   label="공간종류"
-                  defaultValue={data.spaceType}
                   {...register("spaceType", {
                     required: "This field is required",
                   })}
@@ -150,7 +127,6 @@ const ModalUpdate = ({
               <Grid item sm={12} md={6}>
                 <TextField
                   label="고객명"
-                  defaultValue={data.clientName}
                   {...register("clientName", {
                     required: "This field is required",
                   })}
@@ -163,11 +139,9 @@ const ModalUpdate = ({
               <Grid item sm={12} md={6}>
                 <TextField
                   label="고객전화"
-                  defaultValue={data.clientPhone}
                   {...register("clientPhone", {
                     required: "This field is required",
                   })}
-                  InputLabelProps={{ shrink: true }}
                   error={!!errors.clientPhone}
                   helperText={errors.clientPhone?.message}
                   margin="normal"
@@ -178,11 +152,9 @@ const ModalUpdate = ({
               <Grid item sm={12} md={6}>
                 <TextField
                   label="공사지"
-                  defaultValue={data.spaceLocation}
                   {...register("spaceLocation", {
                     required: "This field is required",
                   })}
-                  InputLabelProps={{ shrink: true }}
                   error={!!errors.spaceLocation}
                   helperText={errors.spaceLocation?.message}
                   margin="normal"
@@ -192,8 +164,9 @@ const ModalUpdate = ({
               <Grid item sm={12} md={6}>
                 <TextField
                   label="공사면적"
-                  defaultValue={data.spaceSize}
-                  {...register("spaceSize")}
+                  {...register("spaceSize", {
+                    required: "This field is required",
+                  })}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">평</InputAdornment>
@@ -209,15 +182,16 @@ const ModalUpdate = ({
               <Grid item sm={12} md={6}>
                 <TextField
                   label="공사금액"
-                  defaultValue={data.projectPrice}
-                  {...register("projectPrice")}
+                  {...register("salesPrice", {
+                    required: "This field is required",
+                  })}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">만원</InputAdornment>
                     ),
                   }}
-                  error={!!errors.projectPrice}
-                  helperText={errors.projectPrice?.message}
+                  error={!!errors.salesPrice}
+                  helperText={errors.salesPrice?.message}
                   margin="normal"
                   fullWidth
                   type="number"
@@ -225,80 +199,44 @@ const ModalUpdate = ({
               </Grid>
               <Grid item sm={12} md={6}>
                 <TextField
-                  label="담당자"
-                  defaultValue={data.projectManager}
-                  {...register("projectManager")}
-                  error={!!errors.projectManager}
-                  helperText={errors.projectManager?.message}
+                  label="영업담당자"
+                  {...register("salesManager", {
+                    required: "This field is required",
+                  })}
+                  error={!!errors.salesManager}
+                  helperText={errors.salesManager?.message}
                   margin="normal"
                   fullWidth
                 />
               </Grid>
               <Grid item sm={12} md={6}>
-                <FormControl
-                  variant="outlined"
-                  margin="normal"
-                  fullWidth
-                  error={!!errors.projectStatus}
-                >
-                  <InputLabel id="project-status-label">처리</InputLabel>
-                  <Controller
-                    render={({ field }) => (
-                      <Select
-                        labelId="project-status-label"
-                        id="project-status"
-                        {...field}
-                        label="진행도"
-                      >
-                        {projectStatusOption.map((option) => (
-                          <MenuItem key={option} value={option}>
-                            {option}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                    name="projectStatus"
-                    control={control}
-                    defaultValue={data.projectStatus}
-                    rules={{ required: "This field is required" }}
-                  />
-                  {errors.projectStatus && (
-                    <FormHelperText>
-                      {errors.projectStatus.message}
-                    </FormHelperText>
-                  )}
-                </FormControl>
-                {/* <Autocomplete
-                  id="project-status"
-                  options={projectStatusOption}
-                  value={data.projectStatus}
-                  onChange={(event, newValue) => {
-                    setValue("projectStatus", newValue);
-                  }}
+                <Autocomplete
+                  id="sales-status"
+                  options={salesStatusOption}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="진행도"
-                      {...register("projectStatus", {
-                        required: "This field is required",
-                      })}
-                      error={!!errors.projectStatus}
-                      helperText={errors.projectStatus?.message}
+                      error={!!errors.salesStatus}
+                      helperText={errors.salesStatus?.message}
                       margin="normal"
                       fullWidth
+                      {...register("salesStatus", {
+                        required: "This field is required",
+                      })}
+                      autoComplete="off"
                     />
                   )}
-                /> */}
+                />
               </Grid>
               <Grid item sm={12} md={6}>
                 <TextField
-                  label="프로젝트설명"
-                  defaultValue={data.projectDescription}
-                  {...register("projectDescription", {
+                  label="영업문의 설명"
+                  {...register("salesDescription", {
                     required: "This field is required",
                   })}
-                  error={!!errors.projectDescription}
-                  helperText={errors.projectDescription?.message}
+                  error={!!errors.salesDescription}
+                  helperText={errors.salesDescription?.message}
                   margin="normal"
                   fullWidth
                   multiline
@@ -317,7 +255,7 @@ const ModalUpdate = ({
           >
             <Button
               variant="outlined"
-              onClick={handleClose}
+              onClick={handleCloseAndReset}
               startIcon={<Cancel />}
               color="secondary"
             >
@@ -325,12 +263,12 @@ const ModalUpdate = ({
             </Button>
             <Button
               variant="contained"
-              startIcon={<Edit />}
+              startIcon={<Create />}
               color="secondary"
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? "Updating..." : "수정하기"}
+              {isLoading ? "Creating..." : "등록하기"}
             </Button>
           </Stack>
         </Box>
@@ -339,4 +277,4 @@ const ModalUpdate = ({
   );
 };
 
-export default ModalUpdate;
+export default ModalCreate;

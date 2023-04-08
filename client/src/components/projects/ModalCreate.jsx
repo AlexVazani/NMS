@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Box,
@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import { Create, Cancel } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import { useCreateProjectMutation } from "state/api";
 
@@ -23,12 +25,26 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm();
 
   const [createProject, { isLoading }] = useCreateProjectMutation();
 
   const navigate = useNavigate();
   const theme = useTheme();
+
+  // Datepicker
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+
+  const handleStartDateChange = (date) => {
+    setStartDate(date);
+    setValue("projectStart", date);
+  };
+  const handleEndDateChange = (date) => {
+    setEndDate(date);
+    setValue("projectEnd", date);
+  };
 
   // Modal function
   const handleCloseAndReset = () => {
@@ -37,10 +53,6 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
   };
 
   const projectStatusOption = [
-    "문의상담",
-    "미팅실측",
-    "도면3D",
-    "견적계약",
     "철거설비",
     "목공전기",
     "바닥필름",
@@ -63,12 +75,7 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={handleCloseAndReset}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
+    <Modal open={open} onClose={handleCloseAndReset}>
       <form onSubmit={handleSubmit(handleCreateProject)}>
         <Box
           sx={{
@@ -119,7 +126,7 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                   error={!!errors.projectTitle}
                   helperText={errors.projectTitle?.message}
                   variant="outlined"
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                 />
               </Grid>
@@ -131,8 +138,22 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                   })}
                   error={!!errors.spaceType}
                   helperText={errors.spaceType?.message}
-                  margin="normal"
+                  margin="dense"
                   fullWidth
+                />
+              </Grid>
+              <Grid item sm={12} md={12}>
+                <TextField
+                  label="프로젝트설명"
+                  {...register("projectDescription", {
+                    required: "This field is required",
+                  })}
+                  error={!!errors.projectDescription}
+                  helperText={errors.projectDescription?.message}
+                  margin="dense"
+                  fullWidth
+                  multiline
+                  rows={2}
                 />
               </Grid>
               <Grid item sm={12} md={6}>
@@ -143,7 +164,7 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                   })}
                   error={!!errors.clientName}
                   helperText={errors.clientName?.message}
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                 />
               </Grid>
@@ -155,7 +176,7 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                   })}
                   error={!!errors.clientPhone}
                   helperText={errors.clientPhone?.message}
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                   type="tel"
                 />
@@ -168,7 +189,7 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                   })}
                   error={!!errors.spaceLocation}
                   helperText={errors.spaceLocation?.message}
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                 />
               </Grid>
@@ -185,7 +206,7 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                   }}
                   error={!!errors.spaceSize}
                   helperText={errors.spaceSize?.message}
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                   type="number"
                 />
@@ -203,21 +224,51 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                   }}
                   error={!!errors.projectPrice}
                   helperText={errors.projectPrice?.message}
-                  margin="normal"
+                  margin="dense"
                   fullWidth
                   type="number"
                 />
               </Grid>
               <Grid item sm={12} md={6}>
                 <TextField
-                  label="담당자"
+                  label="공사담당"
                   {...register("projectManager", {
                     required: "This field is required",
                   })}
                   error={!!errors.projectManager}
                   helperText={errors.projectManager?.message}
-                  margin="normal"
+                  margin="dense"
                   fullWidth
+                />
+              </Grid>
+              <Grid item sm={12} md={6}>
+                <DatePicker
+                  selected={startDate}
+                  onChange={handleStartDateChange}
+                  customInput={
+                    <TextField
+                      label="착공일"
+                      {...register("projectStart", { value: startDate })}
+                      margin="dense"
+                      fullWidth
+                    />
+                  }
+                  dateFormat="yyyy-MM-dd"
+                />
+              </Grid>
+              <Grid item sm={12} md={6}>
+                <DatePicker
+                  selected={endDate}
+                  onChange={handleEndDateChange}
+                  customInput={
+                    <TextField
+                      label="준공일"
+                      {...register("projectEnd", { value: endDate })}
+                      margin="dense"
+                      fullWidth
+                    />
+                  }
+                  dateFormat="yyyy-MM-dd"
                 />
               </Grid>
               <Grid item sm={12} md={6}>
@@ -230,7 +281,7 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                       label="진행도"
                       error={!!errors.projectStatus}
                       helperText={errors.projectStatus?.message}
-                      margin="normal"
+                      margin="dense"
                       fullWidth
                       {...register("projectStatus", {
                         required: "This field is required",
@@ -240,15 +291,11 @@ const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
                   )}
                 />
               </Grid>
-              <Grid item sm={12} md={6}>
+              <Grid item sm={12} md={12}>
                 <TextField
-                  label="프로젝트설명"
-                  {...register("projectDescription", {
-                    required: "This field is required",
-                  })}
-                  error={!!errors.projectDescription}
-                  helperText={errors.projectDescription?.message}
-                  margin="normal"
+                  label="공지사항"
+                  {...register("projectNotice")}
+                  margin="dense"
                   fullWidth
                   multiline
                   rows={4}

@@ -3,10 +3,12 @@ import { useForm, Controller } from "react-hook-form";
 import {
   Box,
   Stack,
+  Switch,
   Button,
   Typography,
   TextField,
   FormControl,
+  FormControlLabel,
   FormHelperText,
   InputLabel,
   MenuItem,
@@ -28,7 +30,11 @@ const DrawerUpdate = ({
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      invoiceTaxCheck: invoiceData.invoiceTaxCheck,
+    },
+  });
 
   const [updateInvoice, { isLoading }] = useUpdateInvoiceMutation();
 
@@ -53,7 +59,7 @@ const DrawerUpdate = ({
     <Box
       sx={{
         padding: 3,
-        width: { sm: "300px", md: "400px" },
+        width: { xs: "300px", md: "400px" },
       }}
     >
       <Stack direction="row" spacing={2} alignItems="center">
@@ -66,13 +72,6 @@ const DrawerUpdate = ({
       </Stack>
       <form onSubmit={handleSubmit(handleUpdateInvoice)}>
         <Box sx={{ mt: 1 }}>
-          <TextField
-            label="프로젝트"
-            defaultValue={invoiceData.projectTitle}
-            {...register("projectTitle")}
-            margin="dense"
-            fullWidth
-          />
           <TextField
             label="공정"
             defaultValue={invoiceData.projectProcess}
@@ -119,6 +118,30 @@ const DrawerUpdate = ({
             margin="dense"
             fullWidth
           />
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ pl: "12px", height: "50px" }}
+          >
+            <Typography variant="body1">세금계산서</Typography>
+            <Controller
+              name="invoiceTaxCheck"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={!!field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      color="secondary"
+                    />
+                  }
+                  label={field.value ? "발행" : "미발행"}
+                />
+              )}
+            />
+          </Stack>
           <FormControl
             variant="outlined"
             margin="dense"
@@ -159,11 +182,7 @@ const DrawerUpdate = ({
           <TextField
             label="지급계좌"
             defaultValue={invoiceData.paymentBankacct}
-            {...register("paymentBankacct", {
-              required: "This field is required",
-            })}
-            error={!!errors.paymentBankacct}
-            helperText={errors.paymentBankacct?.message}
+            {...register("paymentBankacct")}
             variant="outlined"
             margin="dense"
             fullWidth

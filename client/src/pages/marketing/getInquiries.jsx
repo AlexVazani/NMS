@@ -14,20 +14,20 @@ import {
 import { useLocation } from "react-router-dom";
 import { Add, Search, TaskAlt } from "@mui/icons-material";
 
-import ProjectCard from "components/projects/CardProject";
-import ModalCreate from "components/projects/ModalCreate";
+import CardInquiry from "components/marketing/CardInquiry";
 import Header from "components/layout/Header";
-import { useGetProjectsQuery } from "state/api";
+import { useGetInquiriesQuery } from "state/api";
+import ModalCreate from "components/marketing/ModalCreate";
 
-const GetProjects = () => {
+const GetInquiries = () => {
   const location = useLocation();
 
-  const { data, isLoading, refetch } = useGetProjectsQuery();
+  const { data, isLoading, refetch } = useGetInquiriesQuery();
   const isNonMobile = useMediaQuery("(min-width: 1000px)");
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"));
 
   const sortedData = (data?.data.slice() ?? []).sort(
-    (a, b) => b.projectNo - a.projectNo
+    (a, b) => b.inquiryId - a.inquiryId
   );
 
   // Filtering function
@@ -35,8 +35,8 @@ const GetProjects = () => {
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value);
   };
-  const filteredData = sortedData.filter((project) => {
-    return project.projectTitle
+  const filteredData = sortedData.filter((inquiry) => {
+    return inquiry.inquiryTitle
       .toLowerCase()
       .includes(filterValue.toLowerCase());
   });
@@ -68,7 +68,7 @@ const GetProjects = () => {
 
   return (
     <Box>
-      <Header title="PROJECTS" subtitle="현재 진행중인 프로젝트입니다." />
+      <Header title="INQUIRIES" subtitle="계약전 문의 및 영업건입니다." />
       <Box sx={{ mt: 2 }} display="flex" justifyContent="space-between">
         <Stack direction="row" alignItems="center" spacing={2}>
           <Button
@@ -78,7 +78,7 @@ const GetProjects = () => {
             size="large"
             color="secondary"
           >
-            프로젝트
+            문의 등록
           </Button>
           <ModalCreate
             open={open}
@@ -100,18 +100,18 @@ const GetProjects = () => {
               message={
                 <span>
                   <TaskAlt sx={{ mr: 1, verticalAlign: "middle" }} />
-                  프로젝트가 등록되었습니다!
+                  영업문의가 등록되었습니다!
                 </span>
               }
             />
           </Snackbar>
           <Typography sx={{ display: isMobile ? "none" : "block" }}>
-            {data && `${data.totalCount}개의 프로젝트가 있습니다.`}
+            {data && `${data.totalCount}개의 문의가 있습니다.`}
           </Typography>
         </Stack>
         {/* Fillering */}
         <TextField
-          label="프로젝트 검색"
+          label="영업문의 검색"
           variant="outlined"
           sx={{ width: "24%", minWidth: 200, input: { height: "21px" } }}
           size="small"
@@ -139,32 +139,32 @@ const GetProjects = () => {
             .map(
               ({
                 _id,
-                projectNo,
-                projectTitle,
+                inquiryId,
+                inquiryTitle,
                 spaceType,
                 spaceSize,
                 spaceLocation,
                 clientName,
                 clientPhone,
-                projectManager,
-                projectPrice,
-                projectStatus,
-                projectDescription,
+                salesManager,
+                salesPrice,
+                salesStatus,
+                salesDescription,
               }) => (
-                <ProjectCard
+                <CardInquiry
                   key={_id}
                   _id={_id}
-                  projectNo={projectNo}
-                  projectTitle={projectTitle}
+                  inquiryId={inquiryId}
+                  inquiryTitle={inquiryTitle}
                   spaceType={spaceType}
                   spaceSize={spaceSize}
                   spaceLocation={spaceLocation}
                   clientName={clientName}
                   clientPhone={clientPhone}
-                  projectManager={projectManager}
-                  projectPrice={projectPrice}
-                  projectStatus={projectStatus}
-                  projectDescription={projectDescription}
+                  salesManager={salesManager}
+                  salesPrice={salesPrice}
+                  salesStatus={salesStatus}
+                  salesDescription={salesDescription}
                 />
               )
             )}{" "}
@@ -187,4 +187,4 @@ const GetProjects = () => {
   );
 };
 
-export default GetProjects;
+export default GetInquiries;

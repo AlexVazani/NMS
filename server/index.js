@@ -5,7 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
-import clientRoutes from "./routes/client.js";
+import apiRoutes from "./routes/index.js";
 
 /* CONFIGURATION */
 dotenv.config();
@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 /* ROUTES */
-app.use("/client", clientRoutes);
+app.use("/", apiRoutes);
 
 app.get("/", (req, res) => {
   res.send({ message: "Hellow Alex!" });

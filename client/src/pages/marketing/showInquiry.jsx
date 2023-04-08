@@ -6,7 +6,6 @@ import {
   Button,
   Grid,
   Typography,
-  LinearProgress,
   Snackbar,
   SnackbarContent,
   Dialog,
@@ -16,18 +15,31 @@ import {
   DialogTitle,
   useTheme,
 } from "@mui/material";
-import { Edit, Delete, TaskAlt, List } from "@mui/icons-material";
+import {
+  Edit,
+  Delete,
+  TaskAlt,
+  List,
+  ThumbUpAltOutlined,
+} from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { useShowProjectQuery, useDeleteProjectMutation } from "state/api";
-import ModalUpdate from "components/projects/ModalUpdate";
+import {
+  useShowInquiryQuery,
+  useDeleteInquiryMutation,
+  useAddProjectMutation,
+  useGetInquiriesQuery,
+} from "state/api";
+import ModalUpdate from "components/marketing/ModalUpdate";
 import Reports from "components/reports/Reports";
 import Invoices from "components/invoices/Invoices";
 
-const ShowProject = () => {
+const ShowInquiry = () => {
   const { id } = useParams();
-  const { data, isLoading, refetch } = useShowProjectQuery(id);
-  const [deleteProject] = useDeleteProjectMutation();
+  const { data, isLoading, refetch } = useShowInquiryQuery(id);
+  const [deleteInquiry] = useDeleteInquiryMutation();
+  const [addProject] = useAddProjectMutation();
+  const { refetch: refetchInquiries } = useGetInquiriesQuery();
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -47,47 +59,39 @@ const ShowProject = () => {
   const handleOpenDialog = () => setDeleteDialogOpen(true);
   const handleCloseDialog = () => setDeleteDialogOpen(false);
 
-  // LinearProgress value control
-  const getProgressValue = (projectStatus) => {
-    switch (projectStatus) {
-      case "철거설비":
-        return 20;
-      case "목공전기":
-        return 40;
-      case "바닥필름":
-        return 60;
-      case "도배조명":
-        return 80;
-      case "가구준공":
-        return 90;
-      case "추가A/S":
-        return 100;
-      default:
-        return 0;
-    }
-  };
+  const [addProjectDialogOpen, setAddProjectDialogOpen] = useState(false);
+  const handleOpenAddProjectDialog = () => setAddProjectDialogOpen(true);
+  const handleCloseAddProjectDialog = () => setAddProjectDialogOpen(false);
 
   // After update
-  const handleUpdatedProject = () => {
+  const handleUpdatedInquiry = () => {
     refetch();
   };
 
   // Goto List
   const handleGotoList = () => {
-    navigate("/projects", {
+    navigate("/inquiries", {
       state: { gotoRefetch: true },
     });
   };
 
   // Delete handle funtion
-  const handleDeleteProject = async (id) => {
+  const handleDeleteInquiry = async (id) => {
     try {
-      await deleteProject(id).unwrap();
+      await deleteInquiry(id).unwrap();
       handleCloseDialog();
-      navigate("/projects", { state: { gotoRefetch: true } });
+      navigate("/inquiries", { state: { gotoRefetch: true } });
     } catch (error) {
       console.error(error);
     }
+  };
+
+  // Turn to Project
+  const handleAddProject = async () => {
+    await addProject(id);
+    handleCloseAddProjectDialog();
+    refetchInquiries();
+    navigate("/projects", { state: { gotoRefetch: true } });
   };
 
   return (
@@ -96,14 +100,12 @@ const ShowProject = () => {
         <Box>
           <Box>
             <Typography variant="h2" sx={{ mb: "5px" }}>
-              {data.projectTitle}
+              {data.inquiryTitle}
             </Typography>
             <Typography color={theme.palette.secondary[400]}>
               {data.spaceType}
             </Typography>
-            <Typography alignItems="center">
-              {data.projectDescription}
-            </Typography>
+            <Typography alignItems="center">{data.salesDescription}</Typography>
           </Box>
           <Box mt="30px">
             <Grid container spacing={3}>
@@ -157,9 +159,7 @@ const ShowProject = () => {
                     </Grid>
                     <Grid item xs={9}>
                       <Typography color={"#B6A7D0"}>
-                        {new Intl.NumberFormat("ko-KR").format(
-                          data.projectPrice
-                        )}{" "}
+                        {new Intl.NumberFormat("ko-KR").format(data.salesPrice)}{" "}
                         만원
                       </Typography>
                     </Grid>
@@ -172,51 +172,14 @@ const ShowProject = () => {
                       </Typography>
                     </Grid>
                     <Grid item xs={3}>
-                      <Typography>공사담당</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <Typography color={"#B6A7D0"}>
-                        {data.projectManager}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Typography>착공일</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <Typography color={"#B6A7D0"}>
-                        {data.projectStart
-                          ? new Date(data.projectStart).toLocaleDateString()
-                          : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Typography>준공일</Typography>
-                    </Grid>
-                    <Grid item xs={9}>
-                      <Typography color={"#B6A7D0"}>
-                        {data.projectEnd
-                          ? new Date(data.projectEnd).toLocaleDateString()
-                          : null}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
                       <Typography>진행도</Typography>
                     </Grid>
                     <Grid item xs={9}>
                       <Typography color={"#B6A7D0"}>
-                        {data.projectStatus}
+                        {data.salesStatus}
                       </Typography>
                     </Grid>
                   </Grid>
-                  <LinearProgress
-                    variant="determinate"
-                    value={getProgressValue(data.projectStatus)}
-                    sx={{
-                      mt: 2,
-                      height: 8,
-                      borderRadius: 4,
-                    }}
-                  />
                   <Stack
                     direction="row"
                     justifyContent="left"
@@ -244,7 +207,7 @@ const ShowProject = () => {
                       id={id}
                       data={data}
                       open={open}
-                      onUpdate={handleUpdatedProject}
+                      onUpdate={handleUpdatedInquiry}
                       handleClose={handleClose}
                       setSnackbarOpen={setSnackbarOpen}
                     />
@@ -263,37 +226,59 @@ const ShowProject = () => {
                         message={
                           <span>
                             <TaskAlt sx={{ mr: 1, verticalAlign: "middle" }} />
-                            프로젝트가 수정되었습니다!
+                            영업문의가 수정되었습니다!
                           </span>
                         }
                       />
                     </Snackbar>
                   </Stack>
                 </Box>
-                <Box
-                  sx={{
-                    backgroundColor: theme.palette.background.alt,
-                    borderRadius: "0.55rem",
-                    padding: 3,
-                    mt: 2,
-                  }}
+                <Stack
+                  direction="row"
+                  justifyContent="left"
+                  alignItems="center"
+                  spacing={1}
+                  sx={{ mt: 2, ml: 3 }}
                 >
-                  <Typography sx={{ pb: 1 }}>공지사항</Typography>
-                  <Divider />
-                  <Box>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        mt: 1,
-                        color: " #B6A7D0",
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
-                      {data.projectNotice}
-                    </Typography>
-                  </Box>
-                </Box>
-                <Box sx={{ mt: 2, ml: 2 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleOpenAddProjectDialog}
+                    startIcon={<ThumbUpAltOutlined />}
+                    color="secondary"
+                  >
+                    계약완료
+                  </Button>
+                  {/* 계약완료 Dialog */}
+                  <Dialog
+                    open={addProjectDialogOpen}
+                    onClose={handleCloseAddProjectDialog}
+                  >
+                    <DialogTitle color={theme.palette.secondary[400]}>
+                      계약완료
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText>
+                        이 영업문의를 계약 프로젝트로 등록하시겠습니까?
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleCloseAddProjectDialog}
+                      >
+                        취소
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleAddProject}
+                        autoFocus
+                      >
+                        등록
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
                   <Button
                     variant="outlined"
                     onClick={handleOpenDialog}
@@ -313,12 +298,12 @@ const ShowProject = () => {
                       id="alert-dialog-title"
                       color={theme.palette.secondary[400]}
                     >
-                      프로젝트 삭제
+                      문의삭제
                     </DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
-                        이 프로젝트를 삭제하시겠습니까? 삭제한 프로젝트는 되돌릴
-                        수 없습니다.
+                        이 영업문의를 삭제하시겠습니까? 삭제한 문의는 되돌릴 수
+                        없습니다.
                       </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -332,21 +317,18 @@ const ShowProject = () => {
                       <Button
                         variant="contained"
                         color="secondary"
-                        onClick={() => handleDeleteProject(id)}
+                        onClick={() => handleDeleteInquiry(id)}
                         autoFocus
                       >
                         삭제
                       </Button>
                     </DialogActions>
                   </Dialog>
-                </Box>
+                </Stack>
               </Grid>
               <Grid item sm={12} md={7}>
                 <Box borderRadius="0.55rem" backgroundColor="#312D4A">
-                  <Reports projectId={id} projectStatus={data.projectStatus} />
-                </Box>
-                <Box borderRadius="0.55rem" marginTop={3} width="100%">
-                  <Invoices projectId={id} />
+                  <Reports inquiryId={id} salesStatus={data.salesStatus} />
                 </Box>
               </Grid>
             </Grid>
@@ -359,4 +341,4 @@ const ShowProject = () => {
   );
 };
 
-export default ShowProject;
+export default ShowInquiry;

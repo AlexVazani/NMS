@@ -13,40 +13,46 @@ import {
 } from "@mui/material";
 import {
   Menu as MenuIcon,
+  PhoneAndroidOutlined,
   HomeOutlined,
   VillaOutlined,
   CommentOutlined,
+  AssignmentOutlined,
   Payment,
   Groups2Outlined,
   CalendarMonthOutlined,
 } from "@mui/icons-material";
 
-const DrawerSidebar = () => {
+const DrawerSidebar = ({ handleSideDrawerToggle }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const menuItem01 = [
     {
+      icon: <PhoneAndroidOutlined />,
+      text: "Inquiries",
+    },
+  ];
+  const menuItem02 = [
+    {
       icon: <VillaOutlined />,
       text: "Projects",
+    },
+    {
+      icon: <AssignmentOutlined />,
+      text: "Reports",
     },
     {
       icon: <CalendarMonthOutlined />,
       text: "Schedule",
     },
   ];
-  const menuItem02 = [
-    {
-      icon: <CommentOutlined />,
-      text: "Reports",
-    },
+  const menuItem03 = [
     {
       icon: <Payment />,
       text: "Invoices",
     },
-  ];
-  const menuItem03 = [
     {
       icon: <Groups2Outlined />,
       text: "Partners",
@@ -61,7 +67,8 @@ const DrawerSidebar = () => {
         <ListItem key={text} disablePadding>
           <ListItemButton
             onClick={() => {
-              navigate(`/${navUrl}`);
+              navigate(`/${navUrl}`, { state: { refetchData: true } });
+              handleSideDrawerToggle();
             }}
             sx={{
               backgroundColor: isSelected
@@ -110,6 +117,7 @@ const DrawerSidebar = () => {
           <ListItemButton
             onClick={() => {
               navigate("/");
+              handleSideDrawerToggle();
             }}
           >
             <ListItemIcon

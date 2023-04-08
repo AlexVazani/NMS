@@ -11,19 +11,19 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const ProjectCard = ({
+const CardInquiry = ({
   _id,
-  projectId,
-  projectTitle,
+  inquiryId,
+  inquiryTitle,
   spaceType,
   spaceSize,
   spaceLocation,
   clientName,
   clientPhone,
-  projectManager,
-  projectPrice,
-  projectStatus,
-  projectDescription,
+  salesManager,
+  salesPrice,
+  salesStatus,
+  salesDescription,
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -38,17 +38,17 @@ const ProjectCard = ({
       }}
     >
       <CardContent>
-        {/* ProjectStatus */}
+        {/* salesStatus */}
         <Typography
           variant="h6"
           color={theme.palette.secondary[300]}
           gutterBottom
         >
-          {projectStatus}
+          {salesStatus}
         </Typography>
-        {/* projectTitle */}
+        {/* inquiryTitle */}
         <Typography variant="h4" component="div">
-          {projectTitle}
+          {inquiryTitle}
         </Typography>
         {/* spaceType */}
         <Typography
@@ -58,9 +58,9 @@ const ProjectCard = ({
         >
           {spaceType}
         </Typography>
-        {/* ProjectDescription */}
+        {/* salesDescription */}
         <Typography variant="body1" color="#CFCCE4">
-          {projectDescription}
+          {salesDescription}
         </Typography>
       </CardContent>
       <CardActions>
@@ -77,7 +77,7 @@ const ProjectCard = ({
             variant="outlined"
             size="small"
             color="secondary"
-            onClick={() => navigate(`/projects/${_id}`)}
+            onClick={() => navigate(`/inquiries/${_id}`)}
           >
             Show
           </Button>
@@ -104,4 +104,4 @@ const ProjectCard = ({
   );
 };
 
-export default ProjectCard;
+export default CardInquiry;

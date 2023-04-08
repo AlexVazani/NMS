@@ -1,20 +1,7 @@
 import React from "react";
-import {
-  Box,
-  Divider,
-  Drawer,
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-} from "@mui/material";
-import {
-  Menu as MenuIcon,
-  ChevronLeft,
-  ChevronRightOutlined,
-} from "@mui/icons-material";
+import { Box, Drawer } from "@mui/material";
 
-import DrawerSidebar from "components/common/DrawerSidebar";
+import DrawerSidebar from "components/layout/DrawerSidebar";
 
 const Sidebar = (props) => {
   const { drawerWidth, mobileOpen, handleSideDrawerToggle } = props;
@@ -40,7 +27,7 @@ const Sidebar = (props) => {
             },
           }}
         >
-          <DrawerSidebar />
+          <DrawerSidebar handleSideDrawerToggle={handleSideDrawerToggle} />
         </Drawer>
         <Drawer
           variant="permanent" // Permanent on Desktop
@@ -53,7 +40,7 @@ const Sidebar = (props) => {
           }}
           open
         >
-          <DrawerSidebar />
+          <DrawerSidebar handleSideDrawerToggle={() => {}} />
         </Drawer>
       </Box>
     </Box>

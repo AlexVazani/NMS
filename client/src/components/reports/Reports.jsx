@@ -24,7 +24,10 @@ import DrawerCreateReport from "components/reports/DrawerCreate";
 import profileImage from "assets/profile.jpg";
 import { useGetReportsQuery, useDeleteReportMutation } from "state/api";
 
-const Reports = ({ projectId }) => {
+const Reports = ({ inquiryId, salesStatus, projectId, projectStatus }) => {
+  const selectedId = inquiryId ?? projectId;
+  const selectedType = inquiryId ? "inquiry" : "project";
+
   // handle Drawer
   const [isCreateDrawerOpen, setIsCreateDrawerOpen] = useState(false);
   const toggleCreateDrawer = () => {
@@ -36,7 +39,8 @@ const Reports = ({ projectId }) => {
     data: reportData,
     isLoading,
     refetch,
-  } = useGetReportsQuery(projectId);
+  } = useGetReportsQuery({ id: selectedId, reportType: selectedType });
+
   const [deleteReport] = useDeleteReportMutation();
 
   const sortedData = (reportData?.slice() ?? []).sort(
@@ -62,7 +66,7 @@ const Reports = ({ projectId }) => {
   // Delete handle funtion
   const handleDeleteReport = async (reportId) => {
     try {
-      await deleteReport({ id: projectId, reportId }).unwrap();
+      await deleteReport({ id: selectedId, reportId }).unwrap();
       refetch();
     } catch (error) {
       console.error(error);
@@ -74,7 +78,7 @@ const Reports = ({ projectId }) => {
       sx={{
         minWidth: "310px",
         borderRadius: "0.55rem",
-        padding: { sm: 1, md: 2 },
+        padding: { xs: 1, md: 2 },
       }}
     >
       <Box
@@ -97,7 +101,10 @@ const Reports = ({ projectId }) => {
           onClose={toggleCreateDrawer}
         >
           <DrawerCreateReport
+            inquiryId={inquiryId}
+            salesStatus={salesStatus}
             projectId={projectId}
+            projectStatus={projectStatus}
             onUpdate={onUpdate}
             toggleCreateDrawer={toggleCreateDrawer}
           />
@@ -132,12 +139,14 @@ const Reports = ({ projectId }) => {
                     }}
                   >
                     <Stack direction="row">
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ mr: 2, fontWeight: 600, color: "text.primary" }}
-                      >
-                        {report.projectId?.projectTitle || "N/A"}
-                      </Typography>
+                      {/* {!report.inquiryId && (
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ mr: 2, fontWeight: 600, color: "text.primary" }}
+                        >
+                          {report.projectId.projectTitle}
+                        </Typography>
+                      )} */}
                       <Typography
                         variant="subtitle1"
                         sx={{ mr: 2, fontWeight: 600, color: "text.primary" }}

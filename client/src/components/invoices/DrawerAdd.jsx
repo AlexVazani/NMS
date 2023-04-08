@@ -1,8 +1,14 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {
   Box,
   Stack,
+  Switch,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormControlLabel,
   Button,
   Typography,
   TextField,
@@ -11,23 +17,38 @@ import {
 } from "@mui/material";
 import { Create, Cancel } from "@mui/icons-material";
 
-import { useAddInvoiceMutation } from "state/api";
+import { useAddInvoiceMutation, useGetProjectsQuery } from "state/api";
 
-const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
+const DrawerAdd = ({ projectId, onUpdate, toggleAddDrawer }) => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
-  } = useForm();
+    setValue,
+  } = useForm({
+    defaultValues: {
+      invoiceTaxCheck: true,
+    },
+  });
 
   const [addInvoice, { isLoading }] = useAddInvoiceMutation();
+  const { data: projectsData } = useGetProjectsQuery();
 
   const theme = useTheme();
+
   // Handle AddInvoice
   const handleAddInvoice = async (data) => {
     try {
-      await addInvoice(data).unwrap();
+      let invoiceData;
+      if (projectId) {
+        invoiceData = { ...data, projectId };
+      } else {
+        invoiceData = data;
+      }
+
+      await addInvoice(invoiceData).unwrap();
 
       onUpdate();
       toggleAddDrawer();
@@ -36,11 +57,12 @@ const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
       console.error(error);
     }
   };
+
   return (
     <Box
       sx={{
         padding: 3,
-        width: { sm: "300px", md: "400px" },
+        width: { xs: "300px", md: "400px" },
       }}
     >
       <Stack direction="row" spacing={2} alignItems="center">
@@ -53,22 +75,36 @@ const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
       </Stack>
       <form onSubmit={handleSubmit(handleAddInvoice)}>
         <Box sx={{ mt: 1 }}>
-          <TextField
-            label="프로젝트"
-            {...register("projectTitle")}
-            margin="dense"
-            fullWidth
-          />
+          {!projectId && projectsData && (
+            <FormControl fullWidth>
+              <InputLabel id="project-select-label">Project</InputLabel>
+              <Select
+                labelId="project-select-label"
+                defaultValue=""
+                {...register("projectId", { required: true })}
+                label="Project"
+                onChange={(e) => setValue("projectId", e.target.value)}
+              >
+                {projectsData.data &&
+                  [...projectsData.data]
+                    .sort(
+                      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                    )
+                    .map((project) => (
+                      <MenuItem key={project._id} value={project._id}>
+                        {project.projectTitle}
+                      </MenuItem>
+                    ))}
+              </Select>
+            </FormControl>
+          )}
           <TextField
             label="공정"
-            {...register("projectProcess", {
-              required: "This field is required",
-            })}
-            error={!!errors.projectProcess}
-            helperText={errors.projectProcess?.message}
+            {...register("projectProcess")}
             variant="outlined"
             margin="dense"
             fullWidth
+            autoComplete="off"
           />
           <TextField
             label="내역"
@@ -101,6 +137,30 @@ const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
             margin="dense"
             fullWidth
           />
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            sx={{ pl: "12px", height: "50px" }}
+          >
+            <Typography variant="body1">세금계산서</Typography>
+            <Controller
+              name="invoiceTaxCheck"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      color="secondary"
+                    />
+                  }
+                  label={field.value ? "발행" : "미발행"}
+                />
+              )}
+            />
+          </Stack>
           <Autocomplete
             id="project-title"
             options={["계좌이체", "현금결제", "카드결제", "핸드폰결제", "기타"]}
@@ -122,11 +182,7 @@ const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
           />
           <TextField
             label="지급계좌"
-            {...register("paymentBankacct", {
-              required: "This field is required",
-            })}
-            error={!!errors.paymentBankacct}
-            helperText={errors.paymentBankacct?.message}
+            {...register("paymentBankacct")}
             variant="outlined"
             margin="dense"
             fullWidth

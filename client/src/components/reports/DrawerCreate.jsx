@@ -16,7 +16,14 @@ import { SaveAlt } from "@mui/icons-material";
 
 import { useCreateReportMutation, useGetProjectsQuery } from "state/api";
 
-const DrawerCreateReport = ({ projectId, onUpdate, toggleCreateDrawer }) => {
+const DrawerCreateReport = ({
+  inquiryId,
+  projectId,
+  salesStatus,
+  projectStatus,
+  onUpdate,
+  toggleCreateDrawer,
+}) => {
   const {
     setValue,
     register,
@@ -32,8 +39,25 @@ const DrawerCreateReport = ({ projectId, onUpdate, toggleCreateDrawer }) => {
   // Create report handle function
   const handleCreateReport = async (data) => {
     try {
-      const selectedProjectId = projectId !== null ? projectId : data.projectId;
-      await createReport({ id: selectedProjectId, data }).unwrap();
+      // for Validation
+      if (!inquiryId && !projectId) {
+        console.error("No valid inquiryId or projectId provided.");
+        return;
+      }
+      const selectedId = inquiryId ?? projectId;
+      const selectedType = inquiryId ? "inquiry" : "project";
+      const selectedStatus = salesStatus ?? projectStatus;
+
+      const combinedData = {
+        ...data,
+        reportType: selectedType,
+        reportStatus: selectedStatus,
+      };
+
+      await createReport({
+        id: selectedId,
+        data: combinedData,
+      }).unwrap();
 
       onUpdate();
       toggleCreateDrawer();
@@ -65,7 +89,7 @@ const DrawerCreateReport = ({ projectId, onUpdate, toggleCreateDrawer }) => {
           marginTop="10px"
           spacing="10px"
         >
-          {projectId === null && projectsData && (
+          {inquiryId === null && projectId === null && projectsData && (
             <FormControl fullWidth>
               <InputLabel id="project-select-label">Project</InputLabel>
               <Select

@@ -6,31 +6,38 @@ import {
   IconButton,
   Typography,
   Drawer,
-  Snackbar,
-  SnackbarContent,
   useTheme,
 } from "@mui/material";
-import { koKR } from "@mui/material/locale";
 import { Add, Edit, Delete, TaskAlt } from "@mui/icons-material";
-import { DataGrid, useGridApiRef } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 
-import DataGridCustomToolbar from "components/common/DataGridCustomToolbar";
-// import DrawerAdd from "components/partners/DrawerAdd";
-// import DrawerUpdate from "components/partners/DrawerUpdate";
-// import { useGetpartnersQuery, useDeletepartnerMutation } from "state/api";
+import DataGridCustomToolbar from "components/partners/DataGridCustomToolbar";
+import DrawerAdd from "components/partners/DrawerAdd";
+import DrawerUpdate from "components/partners/DrawerUpdate";
+import { useGetPartnersQuery, useDeletePartnerMutation } from "state/api";
 
 const Partners = () => {
-  const apiRef = useGridApiRef();
   const theme = useTheme();
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState(false);
-  const [selectedpartnerData, setSelectedpartner] = useState(null);
-  const [searchInput, setSearchInput] = useState("");
+  const [selectedPartnerData, setSelectedPartner] = useState(null);
 
-  const [search, setSearch] = useState("");
+  // handle dataGrid
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const [sort, setSort] = useState({});
 
-  // const { data: partnerData, isLoading, refetch } = useGetpartnersQuery();
-  // const [deletepartner] = useDeletepartnerMutation();
+  const {
+    data: partnerData,
+    isLoading,
+    refetch,
+  } = useGetPartnersQuery({
+    page,
+    pageSize,
+    sort: JSON.stringify(sort),
+  });
+
+  const [deletePartner] = useDeletePartnerMutation();
 
   // handle Drawer
   const toggleAddDrawer = () => {
@@ -42,101 +49,94 @@ const Partners = () => {
 
   // handle each partner Data
   const handleSelectedData = (rowData) => {
-    setSelectedpartner(rowData);
+    setSelectedPartner(rowData);
     toggleUpdateDrawer();
   };
 
   // Refresh
-  // const onUpdate = async () => {
-  //   await refetch();
-  // };
+  const onUpdate = async () => {
+    await refetch();
+  };
 
   // Delete handle funtion
-  // const handleDeletepartner = async (partnerId) => {
-  //   try {
-  //     await deletepartner(partnerId).unwrap();
-  //     refetch();
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
+  const handleDeletePartner = async (partnerId) => {
+    try {
+      await deletePartner(partnerId).unwrap();
+      refetch();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // DataGrid columns setting
   const columns = [
     {
-      field: "createdAt",
-      headerName: "작성일",
-      flex: 1.5,
-      minWidth: 90,
-      valueFormatter: (params) => {
-        const date = new Date(params.value);
-        const options = {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        };
-        const formattedDate = date.toLocaleDateString("ko-KR", options);
-        return `${formattedDate}`;
-      },
-    },
-    {
-      field: "projectTitle",
-      headerName: "프로젝트",
-      flex: 2,
+      field: "_id",
+      headerName: "ID",
+      hide: true,
+      flex: 1,
       minWidth: 100,
     },
     {
-      field: "projectProcess",
-      headerName: "공정",
-      flex: 1,
-      minWidth: 50,
-    },
-    {
-      field: "partnerDescription",
-      headerName: "내역",
+      field: "partnerName",
+      headerName: "업체명",
       flex: 2,
       minWidth: 120,
     },
     {
-      field: "partnerTo",
-      headerName: "받는사람",
-      flex: 1.2,
-      minWidth: 80,
-    },
-    {
-      field: "partnerPrice",
-      headerName: "지급금액",
-      type: "number",
+      field: "partnerBusiness",
+      headerName: "공정",
       flex: 1,
       minWidth: 80,
     },
     {
-      field: "paymentType",
-      headerName: "지급방식",
+      field: "partnerRepresentative",
+      headerName: "대표자",
       flex: 1,
       minWidth: 80,
     },
     {
-      field: "paymentBankacct",
-      headerName: "지급계좌",
+      field: "partnerLicenseNum",
+      headerName: "사업자번호",
+      flex: 2,
+      minWidth: 100,
+    },
+    {
+      field: "partnerContactPerson",
+      headerName: "담당자",
+      flex: 1,
+      minWidth: 80,
+    },
+    {
+      field: "partnerPhone",
+      headerName: "전화번호",
+      flex: 1,
+      minWidth: 110,
+    },
+    {
+      field: "partnerEmail",
+      headerName: "이메일",
+      flex: 1,
+      minWidth: 130,
+    },
+    {
+      field: "partnerAddress",
+      headerName: "주소",
+      flex: 2,
+      minWidth: 200,
+    },
+    {
+      field: "partnerBankacct",
+      headerName: "계좌번호",
       flex: 4,
-      minWidth: 180,
-    },
-    {
-      field: "partnerPriority",
-      headerName: "우선",
-      flex: 1,
-    },
-    {
-      field: "partnerStatus",
-      headerName: "처리",
-      flex: 1,
+      minWidth: 200,
     },
     {
       field: "actions",
       headerName: "Actions",
       headerAlign: "center",
-      flex: 1.5,
+      flex: 2,
+      minWidth: 100,
       sortable: false,
       filterable: false,
       disableColumnMenu: true,
@@ -146,9 +146,9 @@ const Partners = () => {
             <IconButton onClick={() => handleSelectedData(params.row)}>
               <Edit />
             </IconButton>
-            {/* <IconButton onClick={() => handleDeletepartner(params.row._id)}>
+            <IconButton onClick={() => handleDeletePartner(params.row._id)}>
               <Delete />
-            </IconButton> */}
+            </IconButton>
           </Box>
         );
       },
@@ -157,9 +157,8 @@ const Partners = () => {
 
   return (
     <Box
-      style={{
+      sx={{
         backgroundColor: theme.palette.primary[500],
-        mt: 2,
         borderRadius: "0.55rem",
       }}
     >
@@ -170,7 +169,7 @@ const Partners = () => {
           justifyContent="space-between"
           spacing={2}
         >
-          <Typography variant="h5">Project partners</Typography>
+          <Typography variant="h5">협력업체 리스트</Typography>
           <Button
             variant="outlined"
             onClick={toggleAddDrawer}
@@ -179,7 +178,7 @@ const Partners = () => {
           >
             협력업체 등록
           </Button>
-          {/* <Drawer
+          <Drawer
             anchor="right"
             open={isAddDrawerOpen}
             onClose={toggleAddDrawer}
@@ -192,71 +191,39 @@ const Partners = () => {
             onClose={toggleUpdateDrawer}
           >
             <DrawerUpdate
-              selectedpartnerData={selectedpartnerData}
+              selectedPartnerData={selectedPartnerData}
               onUpdate={onUpdate}
               toggleUpdateDrawer={toggleUpdateDrawer}
             />
-          </Drawer> */}
-          {/* 등록 Snackbar */}
-          <Snackbar
-            // open={snackbarOpen}
-            autoHideDuration={1500}
-            // onClose={handleCloseSnackbar}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center",
-            }}
-          >
-            <SnackbarContent
-              sx={{ backgroundColor: "#4caf50" }}
-              message={
-                <span>
-                  <TaskAlt sx={{ mr: 1, verticalAlign: "middle" }} />
-                  품의서가 등록되었습니다!
-                </span>
-              }
-            />
-          </Snackbar>
+          </Drawer>
         </Stack>
       </Box>
-      <Box width="100%">
-        {/* {partnerData && !isLoading ? ( */}
-        <DataGrid
-          // loading={isLoading || !partnerData}
-          // rows={
-          //   search
-          //     ? partnerData.filter((row) =>
-          //         Object.values(row).some((value) =>
-          //           String(value).toLowerCase().includes(search.toLowerCase())
-          //         )
-          //       )
-          //     : partnerData
-          // }
-          rows={""}
-          getRowId={(row) => row._id}
-          // rowCount={(partnerData && partnerData._id) || 0}
-          columns={columns}
-          autoHeight
-          localeText={koKR.components.MuiDataGrid}
-          sortModel={[{ field: "createdAt", sort: "desc" }]}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          components={{
-            Toolbar: (props) => (
-              <DataGridCustomToolbar
-                apiRef={apiRef}
-                searchInput={searchInput}
-                setSearchInput={setSearchInput}
-                setSearch={setSearch}
-              />
-            ),
-          }}
-          disableSelectionOnClick
-          apiRef={apiRef}
-        />
-        {/* ) : (
+      <Box sx={{ width: "100%", overflowX: "auto", height: "67vh" }}>
+        {partnerData && !isLoading ? (
+          <DataGrid
+            loading={isLoading || !partnerData}
+            getRowId={(row) => row._id}
+            rows={partnerData.partners || []}
+            columns={columns}
+            //server-side pagination
+            rowCount={(partnerData && partnerData.total) || 0}
+            rowsPerPageOptions={[20, 50, 100]}
+            pagination
+            page={page}
+            pageSize={pageSize}
+            paginationMode="server"
+            sortingMode="server"
+            onPageChange={(newPage) => setPage(newPage)}
+            onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
+            onSortModelChange={(newSortModel) => setSort(...newSortModel)}
+            className="data-grid"
+            checkboxSelection
+            // sortModel={[{ field: "_id", sort: "desc" }]}
+            components={{ Toolbar: DataGridCustomToolbar }}
+          />
+        ) : (
           "Loading"
-        )} */}
+        )}
       </Box>
     </Box>
   );

@@ -2,11 +2,15 @@ import mongoose from "mongoose";
 
 const InvoiceSchema = new mongoose.Schema(
   {
-    projectTitle: { type: String },
+    projectId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Project",
+    },
     projectProcess: { type: String },
     invoiceDescription: { type: String },
     invoiceTo: { type: String, required: true },
     invoicePrice: { type: Number, required: true },
+    invoiceTaxCheck: { type: Boolean },
     paymentType: { type: String },
     paymentBankacct: { type: String },
     invoicePriority: { type: String },

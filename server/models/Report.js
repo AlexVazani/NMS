@@ -5,6 +5,14 @@ const ReportSchema = new mongoose.Schema(
     projectId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
+    },
+    inquiryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Inquiry",
+    },
+    reportType: {
+      type: String,
+      enum: ["inquiry", "project"],
       required: true,
     },
     reportStatus: { type: String, required: true },
