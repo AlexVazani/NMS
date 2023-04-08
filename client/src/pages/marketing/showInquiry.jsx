@@ -29,7 +29,7 @@ import {
   useDeleteInquiryMutation,
   useAddProjectMutation,
   useGetInquiriesQuery,
-} from "state/api";
+} from "services/api/api";
 import ModalUpdate from "components/marketing/ModalUpdate";
 import Reports from "components/reports/Reports";
 import Invoices from "components/invoices/Invoices";

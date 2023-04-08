@@ -22,7 +22,7 @@ import { timelineItemClasses } from "@mui/lab/TimelineItem";
 
 import DrawerCreateReport from "components/reports/DrawerCreate";
 import profileImage from "assets/profile.jpg";
-import { useGetReportsQuery, useDeleteReportMutation } from "state/api";
+import { useGetReportsQuery, useDeleteReportMutation } from "services/api/api";
 
 const Reports = ({ inquiryId, salesStatus, projectId, projectStatus }) => {
   const selectedId = inquiryId ?? projectId;

@@ -15,7 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import {
   useUpdateScheduleMutation,
   useDeleteScheduleMutation,
-} from "state/api";
+} from "services/api/api";
 
 const DrawerEditSchedule = ({
   onUpdate,

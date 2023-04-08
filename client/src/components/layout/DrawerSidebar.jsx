@@ -17,6 +17,7 @@ import {
   HomeOutlined,
   VillaOutlined,
   CommentOutlined,
+  HandshakeOutlined,
   AssignmentOutlined,
   Payment,
   Groups2Outlined,
@@ -54,8 +55,12 @@ const DrawerSidebar = ({ handleSideDrawerToggle }) => {
       text: "Invoices",
     },
     {
-      icon: <Groups2Outlined />,
+      icon: <HandshakeOutlined />,
       text: "Partners",
+    },
+    {
+      icon: <Groups2Outlined />,
+      text: "Users",
     },
   ];
 

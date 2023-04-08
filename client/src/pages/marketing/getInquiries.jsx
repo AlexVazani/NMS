@@ -16,7 +16,7 @@ import { Add, Search, TaskAlt } from "@mui/icons-material";
 
 import CardInquiry from "components/marketing/CardInquiry";
 import Header from "components/layout/Header";
-import { useGetInquiriesQuery } from "state/api";
+import { useGetInquiriesQuery } from "services/api/api";
 import ModalCreate from "components/marketing/ModalCreate";
 
 const GetInquiries = () => {

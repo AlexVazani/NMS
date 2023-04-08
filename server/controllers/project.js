@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Inquiry from "../models/Inquiry.js";
 import Project from "../models/Project.js";
 import Schedule from "../models/Schedule.js";
 

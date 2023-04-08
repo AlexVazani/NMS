@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { Create, Cancel } from "@mui/icons-material";
 
-import { useAddInvoiceMutation, useGetProjectsQuery } from "state/api";
+import { useAddInvoiceMutation, useGetProjectsQuery } from "services/api/api";
 
 const DrawerAdd = ({ projectId, onUpdate, toggleAddDrawer }) => {
   const {

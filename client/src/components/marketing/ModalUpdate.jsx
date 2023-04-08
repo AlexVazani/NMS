@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { Edit, Cancel } from "@mui/icons-material";
 
-import { useUpdateInquiryMutation } from "state/api";
+import { useUpdateInquiryMutation } from "services/api/api";
 
 const ModalUpdate = ({
   id,

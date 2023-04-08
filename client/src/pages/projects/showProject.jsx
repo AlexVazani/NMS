@@ -19,7 +19,10 @@ import {
 import { Edit, Delete, TaskAlt, List } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { useShowProjectQuery, useDeleteProjectMutation } from "state/api";
+import {
+  useShowProjectQuery,
+  useDeleteProjectMutation,
+} from "services/api/api";
 import ModalUpdate from "components/projects/ModalUpdate";
 import Reports from "components/reports/Reports";
 import Invoices from "components/invoices/Invoices";

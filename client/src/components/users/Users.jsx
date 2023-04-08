@@ -14,29 +14,19 @@ import { koKR } from "@mui/material/locale";
 import { Add, Edit, Delete, TaskAlt } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 
-import DataGridCustomToolbar from "components/invoices/DataGridCustomToolbar";
-import DrawerAdd from "components/invoices/DrawerAdd";
-import DrawerUpdate from "components/invoices/DrawerUpdate";
-import {
-  useGetInvoicesQuery,
-  useDeleteInvoiceMutation,
-} from "services/api/api";
+import DataGridCustomToolbar from "components/Users/DataGridCustomToolbar";
+import DrawerAdd from "components/users/DrawerAdd";
+import DrawerUpdate from "components/users/DrawerUpdate";
+import { useGetUsersQuery, useDeleteUserMutation } from "services/api/authApi";
 
-const Invoices = ({ projectId }) => {
+const Users = () => {
   const theme = useTheme();
   const [isAddDrawerOpen, setIsAddDrawerOpen] = useState(false);
   const [isUpdateDrawerOpen, setIsUpdateDrawerOpen] = useState(false);
-  const [selectedInvoiceData, setSelectedInvoice] = useState(null);
-  // const [searchInput, setSearchInput] = useState("");
+  const [selectedUserData, setSelectedUser] = useState(null);
 
-  // const [search, setSearch] = useState("");
-
-  const {
-    data: invoiceData,
-    isLoading,
-    refetch,
-  } = useGetInvoicesQuery(projectId);
-  const [deleteInvoice] = useDeleteInvoiceMutation();
+  const { data: userData, isLoading, refetch } = useGetUsersQuery();
+  const [deleteUser] = useDeleteUserMutation();
   // handle Drawer
   const toggleAddDrawer = () => {
     setIsAddDrawerOpen(!isAddDrawerOpen);
@@ -45,9 +35,9 @@ const Invoices = ({ projectId }) => {
     setIsUpdateDrawerOpen(!isUpdateDrawerOpen);
   };
 
-  // handle each invoice Data
+  // handle each user Data
   const handleSelectedData = (rowData) => {
-    setSelectedInvoice(rowData);
+    setSelectedUser(rowData);
     toggleUpdateDrawer();
   };
 
@@ -57,12 +47,15 @@ const Invoices = ({ projectId }) => {
   };
 
   // Delete handle funtion
-  const handleDeleteInvoice = async (invoiceId) => {
-    try {
-      await deleteInvoice(invoiceId).unwrap();
-      refetch();
-    } catch (error) {
-      console.error(error);
+  const handleDeleteUser = async (id) => {
+    const confirmDelete = window.confirm("직원정보를 삭제하시겠습니까?");
+    if (confirmDelete) {
+      try {
+        await deleteUser(id).unwrap();
+        refetch();
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -70,9 +63,9 @@ const Invoices = ({ projectId }) => {
   const columns = [
     {
       field: "createdAt",
-      headerName: "작성일",
+      headerName: "등록일",
       flex: 1.5,
-      minWidth: 90,
+      minWidth: 80,
       valueFormatter: (params) => {
         const date = new Date(params.value);
         const options = {
@@ -85,69 +78,46 @@ const Invoices = ({ projectId }) => {
       },
     },
     {
-      field: "projectTitle",
-      headerName: "프로젝트",
-      flex: 2,
-      minWidth: 100,
-      valueGetter: (params) => {
-        return params.row.projectId ? params.row.projectId.projectTitle : "";
-      },
+      field: "userId",
+      headerName: "ID",
+      flex: 1,
+      minWidth: 70,
     },
     {
-      field: "projectProcess",
-      headerName: "공정",
+      field: "userName",
+      headerName: "이름",
+      flex: 1,
+      minWidth: 70,
+    },
+    {
+      field: "userPosition",
+      headerName: "직책",
       flex: 1,
       minWidth: 50,
     },
     {
-      field: "invoiceDescription",
-      headerName: "내역",
+      field: "userPhone",
+      headerName: "전화번호",
       flex: 2,
-      minWidth: 120,
+      minWidth: 110,
     },
     {
-      field: "invoiceTo",
-      headerName: "받는사람",
-      flex: 1.2,
-      minWidth: 80,
+      field: "userEmail",
+      headerName: "이메일",
+      flex: 2,
+      minWidth: 150,
     },
     {
-      field: "invoicePrice",
-      headerName: "지급금액",
-      type: "number",
+      field: "userAddress",
+      headerName: "주소",
+      flex: 2,
+      minWidth: 150,
+    },
+    {
+      field: "userRole",
+      headerName: "권한",
       flex: 1,
       minWidth: 80,
-    },
-    {
-      field: "invoiceTaxCheck",
-      headerName: "계산서",
-      flex: 1,
-      minWidth: 50,
-      renderCell: (params) => {
-        return params.value ? "발행" : "미발행";
-      },
-    },
-    {
-      field: "paymentType",
-      headerName: "지급방식",
-      flex: 1,
-      minWidth: 80,
-    },
-    {
-      field: "paymentBankacct",
-      headerName: "지급계좌",
-      flex: 4,
-      minWidth: 180,
-    },
-    {
-      field: "invoicePriority",
-      headerName: "우선",
-      flex: 1,
-    },
-    {
-      field: "invoiceStatus",
-      headerName: "처리",
-      flex: 1,
     },
     {
       field: "actions",
@@ -164,7 +134,7 @@ const Invoices = ({ projectId }) => {
             <IconButton onClick={() => handleSelectedData(params.row)}>
               <Edit />
             </IconButton>
-            <IconButton onClick={() => handleDeleteInvoice(params.row._id)}>
+            <IconButton onClick={() => handleDeleteUser(params.row._id)}>
               <Delete />
             </IconButton>
           </Box>
@@ -188,25 +158,21 @@ const Invoices = ({ projectId }) => {
           justifyContent="space-between"
           spacing={2}
         >
-          <Typography variant="h5">프로젝트 품의서</Typography>
+          <Typography variant="h5">직원정보</Typography>
           <Button
             variant="outlined"
             onClick={toggleAddDrawer}
             startIcon={<Add />}
             color="secondary"
           >
-            품의서 작성
+            등록하기
           </Button>
           <Drawer
             anchor="right"
             open={isAddDrawerOpen}
             onClose={toggleAddDrawer}
           >
-            <DrawerAdd
-              projectId={projectId}
-              onUpdate={onUpdate}
-              toggleAddDrawer={toggleAddDrawer}
-            />
+            <DrawerAdd onUpdate={onUpdate} toggleAddDrawer={toggleAddDrawer} />
           </Drawer>
           <Drawer
             anchor="right"
@@ -214,7 +180,7 @@ const Invoices = ({ projectId }) => {
             onClose={toggleUpdateDrawer}
           >
             <DrawerUpdate
-              selectedInvoiceData={selectedInvoiceData}
+              selectedUserData={selectedUserData}
               onUpdate={onUpdate}
               toggleUpdateDrawer={toggleUpdateDrawer}
             />
@@ -233,8 +199,8 @@ const Invoices = ({ projectId }) => {
               sx={{ backgroundColor: "#4caf50" }}
               message={
                 <span>
-                  <TaskAlt sx={{ mr: 1, verticalAlign: "middle" }} />
-                  품의서가 등록되었습니다!
+                  <TaskAlt sx={{ mr: 1, verticalAlign: "middle" }} />새 직원이
+                  등록되었습니다!
                 </span>
               }
             />
@@ -242,11 +208,11 @@ const Invoices = ({ projectId }) => {
         </Stack>
       </Box>
       <Box width="100%" height="67vh">
-        {invoiceData && !isLoading ? (
+        {userData && !isLoading ? (
           <DataGrid
-            loading={isLoading || !invoiceData}
+            loading={isLoading || !userData}
             getRowId={(row) => row._id}
-            rows={invoiceData || []}
+            rows={userData || []}
             columns={columns}
             localeText={koKR.components.MuiDataGrid}
             sortModel={[{ field: "createdAt", sort: "desc" }]}
@@ -266,4 +232,4 @@ const Invoices = ({ projectId }) => {
   );
 };
 
-export default Invoices;
+export default Users;

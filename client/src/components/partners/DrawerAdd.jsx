@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Create, Cancel } from "@mui/icons-material";
 
-import { useAddPartnerMutation } from "state/api";
+import { useAddPartnerMutation } from "services/api/api";
 
 const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
   const {

@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { SaveAlt } from "@mui/icons-material";
 
-import { useCreateReportMutation, useGetProjectsQuery } from "state/api";
+import { useCreateReportMutation, useGetProjectsQuery } from "services/api/api";
 
 const DrawerCreateReport = ({
   inquiryId,

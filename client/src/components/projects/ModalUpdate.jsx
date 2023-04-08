@@ -20,7 +20,10 @@ import { Edit, Cancel } from "@mui/icons-material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { useUpdateProjectMutation, useGetScheduleQuery } from "state/api";
+import {
+  useUpdateProjectMutation,
+  useGetScheduleQuery,
+} from "services/api/api";
 
 const ModalUpdate = ({
   id,

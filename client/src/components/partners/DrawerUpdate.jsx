@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Create } from "@mui/icons-material";
 
-import { useUpdatePartnerMutation } from "state/api";
+import { useUpdatePartnerMutation } from "services/api/api";
 
 const DrawerUpdate = ({
   selectedPartnerData: PartnerData,

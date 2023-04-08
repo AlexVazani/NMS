@@ -12,7 +12,7 @@ import { Create, Cancel } from "@mui/icons-material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { useAddScheduleMutation } from "state/api";
+import { useAddScheduleMutation } from "services/api/api";
 
 const DrawerAddSchedule = ({ onUpdate, toggleAddScheduleDrawer }) => {
   const {

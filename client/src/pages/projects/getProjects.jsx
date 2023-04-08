@@ -17,7 +17,7 @@ import { Add, Search, TaskAlt } from "@mui/icons-material";
 import ProjectCard from "components/projects/CardProject";
 import ModalCreate from "components/projects/ModalCreate";
 import Header from "components/layout/Header";
-import { useGetProjectsQuery } from "state/api";
+import { useGetProjectsQuery } from "services/api/api";
 
 const GetProjects = () => {
   const location = useLocation();

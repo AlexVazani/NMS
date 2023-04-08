@@ -14,7 +14,10 @@ import { DataGrid } from "@mui/x-data-grid";
 import DataGridCustomToolbar from "components/partners/DataGridCustomToolbar";
 import DrawerAdd from "components/partners/DrawerAdd";
 import DrawerUpdate from "components/partners/DrawerUpdate";
-import { useGetPartnersQuery, useDeletePartnerMutation } from "state/api";
+import {
+  useGetPartnersQuery,
+  useDeletePartnerMutation,
+} from "services/api/api";
 
 const Partners = () => {
   const theme = useTheme();

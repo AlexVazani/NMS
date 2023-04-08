@@ -9,7 +9,10 @@ import "theme/fullCalendar.css";
 import Header from "components/layout/Header";
 import DrawerAddSchedule from "components/schedule/DrawerAddSchedule";
 import DrawerEditSchedule from "components/schedule/DrawerEditSchedule";
-import { useGetScheduleQuery, useUpdateScheduleMutation } from "state/api";
+import {
+  useGetScheduleQuery,
+  useUpdateScheduleMutation,
+} from "services/api/api";
 
 const GetSchedule = () => {
   const { data: eventData, isLoading, refetch } = useGetScheduleQuery();

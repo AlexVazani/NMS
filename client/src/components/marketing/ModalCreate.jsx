@@ -15,7 +15,7 @@ import {
 import { Create, Cancel } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-import { useCreateInquiryMutation } from "state/api";
+import { useCreateInquiryMutation } from "services/api/api";
 
 const ModalCreate = ({ open, handleClose, setSnackbarOpen }) => {
   const {

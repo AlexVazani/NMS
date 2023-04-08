@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { Create } from "@mui/icons-material";
 
-import { useUpdateInvoiceMutation } from "state/api";
+import { useUpdateInvoiceMutation } from "services/api/api";
 
 const DrawerUpdate = ({
   selectedInvoiceData: invoiceData,
