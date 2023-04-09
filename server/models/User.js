@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema(
     userEmail: { type: String },
     userAddress: { type: String },
     userRole: { type: String, required: true },
+    refreshToken: { type: String },
   },
   { timestamps: true }
 );

@@ -1,33 +1,5 @@
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import User from "../models/User.js";
-
-export const login = async (req, res) => {
-  const { userId, userPassword } = req.body;
-
-  try {
-    const user = await User.findOne({ userId });
-
-    if (!user) {
-      return res.status(401).json({ error: "Invalid user ID or Password" });
-    }
-
-    const validPassword = await bcrypt.compare(userPassword, user.userPassword);
-
-    if (!validPassword) {
-      return res.status(401).json({ error: "Invalid user ID or Password" });
-    }
-
-    const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    res.status(200).json({ token });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
 
 export const getUsers = async (req, res) => {
   try {

@@ -32,8 +32,8 @@ const Login = () => {
   const handleLogin = useCallback(
     async (data) => {
       try {
-        const loginData = await login(data).unwrap();
-        dispatch(loginSuccess(loginData));
+        const token = await login(data).unwrap();
+        dispatch(loginSuccess({ token, userId: data.userId }));
         reset();
         navigate("/dashboard", { state: { gotoRefetch: true } });
       } catch (error) {

@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { loginSuccess, logout } from "services/features/authSlice";
 
 export const authApi = createApi({
   baseQuery: async (args, api, extraOptions) => {
@@ -15,21 +16,41 @@ export const authApi = createApi({
       },
     })(args, api, extraOptions);
 
-    // if (result?.error?.originalStatus === 403) {
-    //   console.log("sending refresh token");
-    //   // send refresh token to get new access token
-    //   const refreshResult = await baseQuery("/refresh", api, extraOptions);
-    //   console.log(refreshResult);
-    //   if (refreshResult?.data) {
-    //     const user = api.getState().auth.user;
-    //     // store the new token
-    //     api.dispatch(setCredentials({ ...refreshResult.data, user }));
-    //     // retry the original query with new access token
-    //     result = await baseQuery(args, api, extraOptions);
-    //   } else {
-    //     api.dispatch(logOut());
-    //   }
-    // }
+    if (result?.error?.originalStatus === 401) {
+      const refreshResult = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/refresh-token`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (refreshResult.ok) {
+        const { token } = await refreshResult.json();
+        api.dispatch(
+          loginSuccess({ token, userId: api.getState().auth.userId })
+        );
+        // retry the original query with new access token
+        result = await fetchBaseQuery({
+          baseUrl: import.meta.env.VITE_BASE_URL,
+          credentials: "include",
+          prepareHeaders: (headers, { getState }) => {
+            const token = getState().auth.token;
+            if (token) {
+              headers.set("Authorization", `Bearer ${token}`);
+            }
+            headers.set("Content-Type", "application/json");
+            return headers;
+          },
+        })(args, api, extraOptions);
+      } else {
+        api.dispatch(logout());
+        console.log("Refresh token expired or invalid");
+      }
+    }
     return result;
   },
   reducerPath: "authApi",
@@ -41,12 +62,18 @@ export const authApi = createApi({
         body: data,
       }),
     }),
+    logout: builder.mutation({
+      query: () => ({
+        url: "logout",
+        method: "POST",
+      }),
+    }),
     getUsers: builder.query({
-      query: () => "auth",
+      query: () => "users",
     }),
     registerUser: builder.mutation({
       query: (data) => ({
-        url: "auth",
+        url: "users",
         method: "POST",
         body: data,
       }),
@@ -54,7 +81,7 @@ export const authApi = createApi({
     }),
     updateUser: builder.mutation({
       query: ({ id, data }) => ({
-        url: `auth/${id}`,
+        url: `users/${id}`,
         method: "PATCH",
         body: data,
       }),
@@ -62,7 +89,7 @@ export const authApi = createApi({
     }),
     deleteUser: builder.mutation({
       query: (id) => ({
-        url: `auth/${id}`,
+        url: `users/${id}`,
         method: "DELETE",
       }),
     }),
@@ -71,6 +98,7 @@ export const authApi = createApi({
 
 export const {
   useLoginMutation,
+  useLogoutMutation,
   useGetUsersQuery,
   useRegisterUserMutation,
   useUpdateUserMutation,

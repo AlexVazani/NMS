@@ -1,7 +1,9 @@
 import express from "express";
 
+import { login, logout } from "../controllers/authController.js";
+import { refreshToken } from "../controllers/refreshToken.js";
+
 import {
-  login,
   getUsers,
   registerUser,
   updateUser,
@@ -55,10 +57,13 @@ import {
 const router = express.Router();
 
 router.post("/login", login);
-router.get("/auth", getUsers);
-router.post("/auth", registerUser);
-router.patch("/auth/:id", updateUser);
-router.delete("/auth/:id", deleteUser);
+router.post("/logout", logout);
+router.post("/refresh-token", refreshToken);
+
+router.get("/users", getUsers);
+router.post("/users", registerUser);
+router.patch("/users/:id", updateUser);
+router.delete("/users/:id", deleteUser);
 
 router.get("/inquiries", getInquiries);
 router.post("/inquiries", createInquiry);

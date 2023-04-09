@@ -58,11 +58,14 @@ const Invoices = ({ projectId }) => {
 
   // Delete handle funtion
   const handleDeleteInvoice = async (invoiceId) => {
-    try {
-      await deleteInvoice(invoiceId).unwrap();
-      refetch();
-    } catch (error) {
-      console.error(error);
+    const confirmDelete = window.confirm("품의서를 삭제하시겠습니까?");
+    if (confirmDelete) {
+      try {
+        await deleteInvoice(invoiceId).unwrap();
+        refetch();
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 

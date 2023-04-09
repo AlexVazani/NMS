@@ -17,16 +17,37 @@ import {
   MenuItem,
   useTheme,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
+import { logout, selectUserId } from "services/features/authSlice";
+import { useLogoutMutation } from "services/api/authApi";
 import profileImage from "assets/profile.jpg";
 
 const Topbar = ({ handleSideDrawerToggle }) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [triggerLogout] = useLogoutMutation();
+
+  const userId = useSelector(selectUserId);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+  const handlePopoverOpen = (event) => setAnchorEl(event.currentTarget);
+  const handlePopoverClose = () => setAnchorEl(null);
+
+  const handleLogout = async () => {
+    try {
+      await triggerLogout();
+      dispatch(logout());
+      navigate("/login");
+      handlePopoverClose();
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  };
 
   return (
     <AppBar
@@ -73,7 +94,7 @@ const Topbar = ({ handleSideDrawerToggle }) => {
             alignItems="center"
           >
             <Button
-              onClick={handleClick}
+              onClick={handlePopoverOpen}
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -91,6 +112,7 @@ const Topbar = ({ handleSideDrawerToggle }) => {
                 borderRadius="50%"
                 sx={{ objectFit: "cover" }}
               />
+              <Typography>{userId ? userId : "No name"}</Typography>
               <ArrowDropDownOutlined
                 sx={{ color: theme.palette.secondary[300], fontSize: "25px" }}
               />
@@ -98,10 +120,10 @@ const Topbar = ({ handleSideDrawerToggle }) => {
             <Menu
               anchorEl={anchorEl}
               open={isOpen}
-              onClose={handleClose}
+              onClose={handlePopoverClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             >
-              <MenuItem onClick={handleClose}>Log Out</MenuItem>
+              <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Menu>
           </Box>
         </Box>

@@ -14,7 +14,6 @@ import { koKR } from "@mui/material/locale";
 import { Add, Edit, Delete, TaskAlt } from "@mui/icons-material";
 import { DataGrid } from "@mui/x-data-grid";
 
-import DataGridCustomToolbar from "components/Users/DataGridCustomToolbar";
 import DrawerAdd from "components/users/DrawerAdd";
 import DrawerUpdate from "components/users/DrawerUpdate";
 import { useGetUsersQuery, useDeleteUserMutation } from "services/api/authApi";
@@ -218,10 +217,6 @@ const Users = () => {
             sortModel={[{ field: "createdAt", sort: "desc" }]}
             pageSize={10}
             rowsPerPageOptions={[10, 20, 50, 100]}
-            checkboxSelection
-            components={{
-              Toolbar: DataGridCustomToolbar,
-            }}
             disableSelectionOnClick
           />
         ) : (

@@ -65,11 +65,14 @@ const Reports = ({ inquiryId, salesStatus, projectId, projectStatus }) => {
 
   // Delete handle funtion
   const handleDeleteReport = async (reportId) => {
-    try {
-      await deleteReport({ id: selectedId, reportId }).unwrap();
-      refetch();
-    } catch (error) {
-      console.error(error);
+    const confirmDelete = window.confirm("보고서를 삭제하시겠습니까?");
+    if (confirmDelete) {
+      try {
+        await deleteReport({ id: selectedId, reportId }).unwrap();
+        refetch();
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 

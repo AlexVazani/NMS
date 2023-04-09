@@ -22,18 +22,21 @@ function App() {
           <CssBaseline />
           <Routes>
             <Route path="/" element={<Layout />}>
-              {/* <Route element={<RequireAuth />}> */}
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/user/*" element={<UserRoutes />} />
-              <Route path="/inquiries/*" element={<InquiryRoutes />} />
-              <Route path="/projects/*" element={<ProjectRoutes />} />
-              <Route path="/reports/*" element={<ReportRoutes />} />
-              <Route path="/invoices/*" element={<InvoiceRoutes />} />
-              <Route path="/partners/*" element={<PartnerRoutes />} />
-              <Route path="/schedule/*" element={<ScheduleRoutes />} />
+              <Route element={<RequireAuth />}>
+                <Route
+                  path="/"
+                  element={<Navigate to="/dashboard" replace />}
+                />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/users/*" element={<UserRoutes />} />
+                <Route path="/inquiries/*" element={<InquiryRoutes />} />
+                <Route path="/projects/*" element={<ProjectRoutes />} />
+                <Route path="/reports/*" element={<ReportRoutes />} />
+                <Route path="/invoices/*" element={<InvoiceRoutes />} />
+                <Route path="/partners/*" element={<PartnerRoutes />} />
+                <Route path="/schedule/*" element={<ScheduleRoutes />} />
+              </Route>
             </Route>
-            {/* </Route> */}
             <Route path="login" element={<Login />} />
           </Routes>
         </ThemeProvider>

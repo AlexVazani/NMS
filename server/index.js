@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
 import apiRoutes from "./routes/index.js";
+import cookieParser from "cookie-parser";
 
 /* CONFIGURATION */
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
+app.use(cookieParser());
 
 /* ROUTES */
 app.use("/", apiRoutes);
