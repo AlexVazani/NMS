@@ -5,10 +5,13 @@ import { refreshToken } from "../controllers/refreshToken.js";
 
 import {
   getUsers,
+  showUser,
   registerUser,
   updateUser,
   deleteUser,
+  uploadUserPhoto,
 } from "../controllers/user.js";
+import upload from "../middlewares/upload.js";
 
 import {
   getInquiries,
@@ -61,9 +64,11 @@ router.post("/logout", logout);
 router.post("/refresh-token", refreshToken);
 
 router.get("/users", getUsers);
-router.post("/users", registerUser);
-router.patch("/users/:id", updateUser);
+router.get("/users/:id", showUser);
+router.post("/users", upload.single("userPhoto"), registerUser);
+router.patch("/users/:id", upload.single("userPhoto"), updateUser);
 router.delete("/users/:id", deleteUser);
+router.post("/upload", upload.single("userPhoto"), uploadUserPhoto);
 
 router.get("/inquiries", getInquiries);
 router.post("/inquiries", createInquiry);

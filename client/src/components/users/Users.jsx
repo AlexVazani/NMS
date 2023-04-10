@@ -16,7 +16,7 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import DrawerAdd from "components/users/DrawerAdd";
 import DrawerUpdate from "components/users/DrawerUpdate";
-import { useGetUsersQuery, useDeleteUserMutation } from "services/api/authApi";
+import { useGetUsersQuery, useDeleteUserMutation } from "services/api/userApi";
 
 const Users = () => {
   const theme = useTheme();
@@ -26,6 +26,7 @@ const Users = () => {
 
   const { data: userData, isLoading, refetch } = useGetUsersQuery();
   const [deleteUser] = useDeleteUserMutation();
+
   // handle Drawer
   const toggleAddDrawer = () => {
     setIsAddDrawerOpen(!isAddDrawerOpen);
@@ -58,6 +59,10 @@ const Users = () => {
     }
   };
 
+  const userPhotoName = (photoPath) => {
+    return photoPath ? photoPath.split("/").pop().replace("uploads\\", "") : "";
+  };
+
   // DataGrid columns setting
   const columns = [
     {
@@ -82,6 +87,31 @@ const Users = () => {
       flex: 1,
       minWidth: 70,
     },
+    {
+      field: "userPhoto",
+      headerName: "사진",
+      flex: 1,
+      minWidth: 70,
+      renderCell: (params) => {
+        const photoName = userPhotoName(params.value);
+        return (
+          <Box>
+            <img
+              src={`${import.meta.env.VITE_BASE_URL}/uploads/${photoName}`}
+              alt="User Thumbnail"
+              style={{
+                width: "40px",
+                height: "40px",
+                objectFit: "cover",
+                borderRadius: "20px",
+                marginTop: "5px",
+              }}
+            />
+          </Box>
+        );
+      },
+    },
+
     {
       field: "userName",
       headerName: "이름",

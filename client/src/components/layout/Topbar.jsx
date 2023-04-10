@@ -22,16 +22,18 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { logout, selectUserId } from "services/features/authSlice";
 import { useLogoutMutation } from "services/api/authApi";
-import profileImage from "assets/profile.jpg";
+import { useShowUserQuery } from "services/api/userApi";
 
 const Topbar = ({ handleSideDrawerToggle }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [triggerLogout] = useLogoutMutation();
-
   const userId = useSelector(selectUserId);
+
+  const [triggerLogout] = useLogoutMutation();
+  const { data: userData } = useShowUserQuery(userId);
+  const [user] = userData || [];
 
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
@@ -88,44 +90,36 @@ const Topbar = ({ handleSideDrawerToggle }) => {
 
         {/* RIGHT SIDE */}
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
+          <Button
+            onClick={handlePopoverOpen}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              textTransform: "none",
+              gap: "1rem",
+            }}
           >
-            <Button
-              onClick={handlePopoverOpen}
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                textTransform: "none",
-                gap: "1rem",
-              }}
-            >
-              <Box
-                component="img"
-                alt="profile"
-                src={profileImage}
-                height="32px"
-                width="32px"
-                borderRadius="50%"
-                sx={{ objectFit: "cover" }}
-              />
-              <Typography>{userId ? userId : "No name"}</Typography>
-              <ArrowDropDownOutlined
-                sx={{ color: theme.palette.secondary[300], fontSize: "25px" }}
-              />
-            </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={isOpen}
-              onClose={handlePopoverClose}
-              anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            >
-              <MenuItem onClick={handleLogout}>Log Out</MenuItem>
-            </Menu>
-          </Box>
+            <Box
+              component="img"
+              alt="profile"
+              src={`${import.meta.env.VITE_BASE_URL}/${user?.userPhoto}`}
+              height="40px"
+              width="40px"
+              borderRadius="50%"
+              sx={{ objectFit: "cover" }}
+            />
+            <Typography>{userId ? userId : "No name"}</Typography>
+          </Button>
+          <Menu
+            anchorEl={anchorEl}
+            open={isOpen}
+            onClose={handlePopoverClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          >
+            <MenuItem>{user?.userName} 님</MenuItem>
+            <MenuItem onClick={handleLogout}>Log Out</MenuItem>
+          </Menu>
         </Box>
       </Toolbar>
     </AppBar>

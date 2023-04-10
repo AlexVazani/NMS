@@ -13,10 +13,6 @@ export const api = createApi({
     "Partners",
   ],
   endpoints: (builder) => ({
-    getUser: builder.query({
-      query: (id) => `general/user/${id}`,
-      providesTags: ["User"],
-    }),
     // Inquiries
     getInquiries: builder.query({
       query: () => "inquiries",

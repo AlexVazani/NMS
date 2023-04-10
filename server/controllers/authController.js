@@ -22,7 +22,7 @@ export const login = async (req, res) => {
       { userId: user.userId },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: "10s",
+        expiresIn: "15m",
       }
     );
 
@@ -30,7 +30,7 @@ export const login = async (req, res) => {
       { userId: user.userId },
       process.env.REFRESH_TOKEN_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "1d",
       }
     );
 

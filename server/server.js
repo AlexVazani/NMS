@@ -5,8 +5,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
-import apiRoutes from "./routes/index.js";
 import cookieParser from "cookie-parser";
+
+import apiRoutes from "./routes/index.js";
 
 /* CONFIGURATION */
 dotenv.config();
@@ -26,12 +27,10 @@ app.use(
 );
 app.use(cookieParser());
 
+app.use("/uploads", express.static("uploads"));
+
 /* ROUTES */
 app.use("/", apiRoutes);
-
-app.get("/", (req, res) => {
-  res.send({ message: "Hellow Alex!" });
-});
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;

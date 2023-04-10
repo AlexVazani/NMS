@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import {
   Box,
@@ -13,9 +14,12 @@ import {
   TextField,
   useTheme,
 } from "@mui/material";
-import { Create } from "@mui/icons-material";
+import { Create, PhotoCameraOutlined } from "@mui/icons-material";
 
-import { useRegisterUserMutation } from "services/api/authApi";
+import {
+  useRegisterUserMutation,
+  useUploadImageMutation,
+} from "services/api/userApi";
 
 const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
   const {
@@ -30,17 +34,41 @@ const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
   const theme = useTheme();
 
   const [registerUser, { isLoading }] = useRegisterUserMutation();
+  const [uploadImage] = useUploadImageMutation();
 
   const userRoleOption = ["Administrator", "Manager", "User"];
 
+  // handle upload image
+  const [userPhoto, setUserPhoto] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setUserPhoto({ file, base64: reader.result });
+      };
+    }
+  };
+
   const handleRegisterUser = async (data) => {
     try {
-      console.log(data);
-      const userData = await registerUser(data).unwrap();
+      let newData = data;
+
+      if (userPhoto) {
+        const imageData = new FormData();
+        imageData.append("userPhoto", userPhoto.file);
+
+        const uploadedImage = await uploadImage(imageData).unwrap();
+        newData = { ...data, userPhoto: uploadedImage.filePath };
+      }
+      const userData = await registerUser(newData).unwrap();
 
       onUpdate();
       toggleAddDrawer();
       reset();
+      setUserPhoto(null);
     } catch (error) {
       console.error(error);
     }
@@ -150,6 +178,35 @@ const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
               defaultValue={""}
             />
           </FormControl>
+
+          <Stack direction="row">
+            <Typography sx={{ m: 1.5 }}>프로필 사진</Typography>
+            <input
+              accept="image/*"
+              style={{ display: "none" }}
+              id="raised-button-file"
+              type="file"
+              onChange={handleFileChange}
+            />
+            <label htmlFor="raised-button-file">
+              <Button
+                variant="outlined"
+                component="span"
+                color="secondary"
+                startIcon={<PhotoCameraOutlined />}
+                sx={{ m: 1 }}
+              >
+                Upload
+              </Button>
+            </label>
+          </Stack>
+          <Box sx={{ ml: 1.5 }}>
+            {userPhoto && userPhoto.file && (
+              <Typography variant="caption">
+                파일명: {userPhoto.file.name}
+              </Typography>
+            )}
+          </Box>
           <Box display="flex" justifyContent="center">
             <Button
               type="submit"
@@ -157,7 +214,7 @@ const DrawerAdd = ({ onUpdate, toggleAddDrawer }) => {
               color="secondary"
               size="large"
               startIcon={<Create />}
-              sx={{ mt: 2 }}
+              sx={{ mt: 3 }}
             >
               직원 등록
             </Button>

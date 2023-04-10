@@ -21,7 +21,6 @@ import {
 import { timelineItemClasses } from "@mui/lab/TimelineItem";
 
 import DrawerCreateReport from "components/reports/DrawerCreate";
-import profileImage from "assets/profile.jpg";
 import { useGetReportsQuery, useDeleteReportMutation } from "services/api/api";
 
 const Reports = ({ inquiryId, salesStatus, projectId, projectStatus }) => {
@@ -172,10 +171,7 @@ const Reports = ({ inquiryId, salesStatus, projectId, projectStatus }) => {
                   </Typography>
                   <Divider sx={{ mt: 2, mb: 1 }} />
                   <Box sx={{ display: "flex", mb: 2 }}>
-                    <Avatar
-                      src={profileImage}
-                      sx={{ width: "2rem", height: "2rem", mr: 2 }}
-                    />
+                    <Avatar sx={{ width: "2rem", height: "2rem", mr: 2 }} />
                     <Box
                       sx={{
                         display: "flex",

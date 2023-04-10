@@ -16,6 +16,7 @@ export const authApi = createApi({
       },
     })(args, api, extraOptions);
 
+    // If access token is expired, ask refreshToken
     if (result?.error?.originalStatus === 401) {
       const refreshResult = await fetch(
         `${import.meta.env.VITE_BASE_URL}/refresh-token`,
@@ -68,39 +69,7 @@ export const authApi = createApi({
         method: "POST",
       }),
     }),
-    getUsers: builder.query({
-      query: () => "users",
-    }),
-    registerUser: builder.mutation({
-      query: (data) => ({
-        url: "users",
-        method: "POST",
-        body: data,
-      }),
-      transformResponse: (response) => response.data,
-    }),
-    updateUser: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `users/${id}`,
-        method: "PATCH",
-        body: data,
-      }),
-      transformResponse: (response) => response.data,
-    }),
-    deleteUser: builder.mutation({
-      query: (id) => ({
-        url: `users/${id}`,
-        method: "DELETE",
-      }),
-    }),
   }),
 });
 
-export const {
-  useLoginMutation,
-  useLogoutMutation,
-  useGetUsersQuery,
-  useRegisterUserMutation,
-  useUpdateUserMutation,
-  useDeleteUserMutation,
-} = authApi;
+export const { useLoginMutation, useLogoutMutation } = authApi;
