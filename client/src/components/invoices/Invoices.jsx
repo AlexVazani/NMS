@@ -88,6 +88,16 @@ const Invoices = ({ projectId }) => {
       },
     },
     {
+      field: "userName",
+      headerName: "작성자",
+      flex: 1,
+      minWidth: 60,
+      valueGetter: (params) => {
+        return params.row.user ? params.row.user.userName : "";
+      },
+    },
+
+    {
       field: "projectTitle",
       headerName: "프로젝트",
       flex: 2,

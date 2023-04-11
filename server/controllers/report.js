@@ -43,7 +43,8 @@ export const getReports = async (req, res) => {
 
     const reports = await Report.find(query)
       .populate("inquiryId", "inquiryTitle")
-      .populate("projectId", "projectTitle");
+      .populate("projectId", "projectTitle")
+      .populate("user", "userName userPhoto");
 
     res.status(200).json(reports);
   } catch (error) {

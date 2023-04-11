@@ -13,7 +13,9 @@ import {
   useTheme,
 } from "@mui/material";
 import { SaveAlt } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 
+import { selectUserId } from "services/features/authSlice";
 import { useCreateReportMutation, useGetProjectsQuery } from "services/api/api";
 
 const DrawerCreateReport = ({
@@ -36,9 +38,17 @@ const DrawerCreateReport = ({
   const { data: projectsData } = useGetProjectsQuery();
   const theme = useTheme();
 
+  const userId = useSelector(selectUserId);
+
   // Create report handle function
   const handleCreateReport = async (data) => {
     try {
+      const { projectId } = data;
+      const project = projectsData.data.find(
+        (project) => project._id === projectId
+      );
+      const projectStatus = project ? project.projectStatus : null;
+      console.log(projectStatus);
       // for Validation
       if (!inquiryId && !projectId) {
         console.error("No valid inquiryId or projectId provided.");
@@ -47,11 +57,11 @@ const DrawerCreateReport = ({
       const selectedId = inquiryId ?? projectId;
       const selectedType = inquiryId ? "inquiry" : "project";
       const selectedStatus = salesStatus ?? projectStatus;
-
       const combinedData = {
         ...data,
         reportType: selectedType,
         reportStatus: selectedStatus,
+        user: userId,
       };
 
       await createReport({
@@ -89,7 +99,7 @@ const DrawerCreateReport = ({
           marginTop="10px"
           spacing="10px"
         >
-          {inquiryId === null && projectId === null && projectsData && (
+          {!inquiryId && !projectId && projectsData && (
             <FormControl fullWidth>
               <InputLabel id="project-select-label">Project</InputLabel>
               <Select
@@ -99,7 +109,8 @@ const DrawerCreateReport = ({
                 defaultValue=""
                 onChange={(e) => setValue("projectId", e.target.value)}
               >
-                {projectsData.data &&
+                {projectsData &&
+                  projectsData.data &&
                   [...projectsData.data]
                     .sort(
                       (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -112,6 +123,7 @@ const DrawerCreateReport = ({
               </Select>
             </FormControl>
           )}
+          <input type="hidden" {...register("projectStatus")} />
           <TextField
             label="보고서 작성"
             {...register("reportContent")}

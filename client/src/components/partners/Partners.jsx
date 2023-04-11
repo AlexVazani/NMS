@@ -27,7 +27,7 @@ const Partners = () => {
 
   // handle dataGrid
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sort, setSort] = useState({});
 
   const {
@@ -210,7 +210,7 @@ const Partners = () => {
             columns={columns}
             //server-side pagination
             rowCount={(partnerData && partnerData.total) || 0}
-            rowsPerPageOptions={[20, 50, 100]}
+            rowsPerPageOptions={[10, 20, 50, 100]}
             pagination
             page={page}
             pageSize={pageSize}

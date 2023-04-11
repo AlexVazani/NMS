@@ -7,12 +7,13 @@ export const getInvoices = async (req, res) => {
 
     let invoices;
     if (projectId) {
-      invoices = await Invoice.find({ projectId: projectId }).populate(
-        "projectId",
-        "projectTitle"
-      );
+      invoices = await Invoice.find({ projectId: projectId })
+        .populate("projectId", "projectTitle")
+        .populate("user", "userName");
     } else {
-      invoices = await Invoice.find().populate("projectId", "projectTitle");
+      invoices = await Invoice.find()
+        .populate("projectId", "projectTitle")
+        .populate("user", "userName");
     }
 
     res.status(200).json(invoices);

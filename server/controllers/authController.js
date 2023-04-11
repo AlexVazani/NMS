@@ -19,7 +19,7 @@ export const login = async (req, res) => {
     }
 
     const accessToken = jwt.sign(
-      { userId: user.userId },
+      { userId: user._id },
       process.env.ACCESS_TOKEN_SECRET,
       {
         expiresIn: "15m",
@@ -27,7 +27,7 @@ export const login = async (req, res) => {
     );
 
     const refreshToken = jwt.sign(
-      { userId: user.userId },
+      { userId: user._id },
       process.env.REFRESH_TOKEN_SECRET,
       {
         expiresIn: "1d",
@@ -44,7 +44,7 @@ export const login = async (req, res) => {
       sameSite: "strict",
     });
 
-    res.status(200).json({ token: accessToken });
+    res.status(200).json({ token: accessToken, userId: user._id });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });

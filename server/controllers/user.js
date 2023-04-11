@@ -14,13 +14,10 @@ export const getUsers = async (req, res) => {
 export const showUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.find(
-      { userId: id },
-      {
-        userPassword: 0, // Exclude userPassword
-        refreshToken: 0, // Exclude refreshToken
-      }
-    );
+    const user = await User.findById(id, {
+      userPassword: 0, // Exclude userPassword
+      refreshToken: 0, // Exclude refreshToken
+    });
 
     res.status(200).json(user);
   } catch (error) {

@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  Menu as MenuIcon,
-  Search,
-  SettingsOutlined,
-  ArrowDropDownOutlined,
-} from "@mui/icons-material";
+import { Menu as MenuIcon, Search } from "@mui/icons-material";
 import {
   AppBar,
   Button,
@@ -29,17 +24,24 @@ const Topbar = ({ handleSideDrawerToggle }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const userId = useSelector(selectUserId);
-
+  const userObjectId = useSelector(selectUserId);
   const [triggerLogout] = useLogoutMutation();
-  const { data: userData } = useShowUserQuery(userId);
-  const [user] = userData || [];
+  const {
+    data: userData,
+    isLoading,
+    isError,
+  } = useShowUserQuery(userObjectId, {
+    skip: !userObjectId,
+    onError: (error) => console.error(error),
+  });
 
+  // handle User Menubox
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
   const handlePopoverOpen = (event) => setAnchorEl(event.currentTarget);
   const handlePopoverClose = () => setAnchorEl(null);
 
+  // handle User Logout
   const handleLogout = async () => {
     try {
       await triggerLogout();
@@ -50,6 +52,8 @@ const Topbar = ({ handleSideDrawerToggle }) => {
       console.error("Error logging out:", error);
     }
   };
+
+  const user = userData || {};
 
   return (
     <AppBar
@@ -100,16 +104,18 @@ const Topbar = ({ handleSideDrawerToggle }) => {
               gap: "1rem",
             }}
           >
-            <Box
-              component="img"
-              alt="profile"
-              src={`${import.meta.env.VITE_BASE_URL}/${user?.userPhoto}`}
-              height="40px"
-              width="40px"
-              borderRadius="50%"
-              sx={{ objectFit: "cover" }}
-            />
-            <Typography>{userId ? userId : "No name"}</Typography>
+            {user?.userPhoto && (
+              <Box
+                component="img"
+                alt="profile"
+                src={`${import.meta.env.VITE_BASE_URL}/${user.userPhoto}`}
+                height="40px"
+                width="40px"
+                borderRadius="50%"
+                sx={{ objectFit: "cover" }}
+              />
+            )}
+            <Typography>{user?.userId}</Typography>
           </Button>
           <Menu
             anchorEl={anchorEl}

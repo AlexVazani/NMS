@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import Inquiry from "../models/Inquiry.js";
 import Project from "../models/Project.js";
 import Schedule from "../models/Schedule.js";
+import Report from "../models/Report.js";
+import Invoice from "../models/Invoice.js";
 
 // Project
 export const getProjects = async (req, res) => {

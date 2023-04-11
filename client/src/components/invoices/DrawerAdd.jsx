@@ -16,7 +16,9 @@ import {
   useTheme,
 } from "@mui/material";
 import { Create, Cancel } from "@mui/icons-material";
+import { useSelector } from "react-redux";
 
+import { selectUserId } from "services/features/authSlice";
 import { useAddInvoiceMutation, useGetProjectsQuery } from "services/api/api";
 
 const DrawerAdd = ({ projectId, onUpdate, toggleAddDrawer }) => {
@@ -38,14 +40,16 @@ const DrawerAdd = ({ projectId, onUpdate, toggleAddDrawer }) => {
 
   const theme = useTheme();
 
+  const userId = useSelector(selectUserId);
+
   // Handle AddInvoice
   const handleAddInvoice = async (data) => {
     try {
       let invoiceData;
       if (projectId) {
-        invoiceData = { ...data, projectId };
+        invoiceData = { ...data, projectId, user: userId };
       } else {
-        invoiceData = data;
+        invoiceData = { ...data, user: userId };
       }
 
       await addInvoice(invoiceData).unwrap();

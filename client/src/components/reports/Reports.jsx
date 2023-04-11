@@ -141,14 +141,22 @@ const Reports = ({ inquiryId, salesStatus, projectId, projectStatus }) => {
                     }}
                   >
                     <Stack direction="row">
-                      {/* {!report.inquiryId && (
+                      {report.projectId && (
                         <Typography
                           variant="subtitle1"
                           sx={{ mr: 2, fontWeight: 600, color: "text.primary" }}
                         >
                           {report.projectId.projectTitle}
                         </Typography>
-                      )} */}
+                      )}
+                      {report.inquiryId && (
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ mr: 2, fontWeight: 600, color: "text.primary" }}
+                        >
+                          {report.inquiryId.inquiryTitle}
+                        </Typography>
+                      )}
                       <Typography
                         variant="subtitle1"
                         sx={{ mr: 2, fontWeight: 600, color: "text.primary" }}
@@ -171,7 +179,23 @@ const Reports = ({ inquiryId, salesStatus, projectId, projectStatus }) => {
                   </Typography>
                   <Divider sx={{ mt: 2, mb: 1 }} />
                   <Box sx={{ display: "flex", mb: 2 }}>
-                    <Avatar sx={{ width: "2rem", height: "2rem", mr: 2 }} />
+                    <Avatar sx={{ width: "2rem", height: "2rem", mr: 1 }}>
+                      <img
+                        src={
+                          report.user
+                            ? `${import.meta.env.VITE_BASE_URL}/${
+                                report.user.userPhoto
+                              }`
+                            : "fallback_image_url"
+                        }
+                        alt="User Photo"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </Avatar>
                     <Box
                       sx={{
                         display: "flex",
@@ -181,10 +205,11 @@ const Reports = ({ inquiryId, salesStatus, projectId, projectStatus }) => {
                     >
                       <Typography
                         variant="body1"
-                        sx={{ fontWeight: 600, mr: 1 }}
+                        sx={{ fontWeight: 600, mr: 2 }}
                       >
-                        하성희
+                        {report.user ? report.user.userName : "Unknown"}
                       </Typography>
+
                       <Button
                         variant="outlined"
                         size="small"

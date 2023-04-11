@@ -17,6 +17,11 @@ const ReportSchema = new mongoose.Schema(
     },
     reportStatus: { type: String, required: true },
     reportContent: { type: String, required: true },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
