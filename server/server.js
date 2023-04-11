@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_ORIGIN_URL,
     credentials: true,
     optionsSuccessStatus: 200,
   })
@@ -42,7 +42,9 @@ mongoose
   .then(() => {
     console.log("MongoDB connected");
     app.listen(PORT, () =>
-      console.log(`Server started on http://localhost:${PORT}`)
+      console.log(
+        `Server started on https://port-0-nms-416cq2mlgci24xg.sel3.cloudtype.app:${PORT}`
+      )
     );
   })
   .catch((error) => console.log(`${error} did not connect`));
