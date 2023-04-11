@@ -42,9 +42,7 @@ mongoose
   .then(() => {
     console.log("MongoDB connected");
     app.listen(PORT, () =>
-      console.log(
-        `Server started on https://port-0-nms-416cq2mlgci24xg.sel3.cloudtype.app:${PORT}`
-      )
+      console.log(`Server started on https://localhost:${PORT}`)
     );
   })
   .catch((error) => console.log(`${error} did not connect`));
