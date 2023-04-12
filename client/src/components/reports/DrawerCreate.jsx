@@ -47,7 +47,8 @@ const DrawerCreateReport = ({
       const project = projectsData.data.find(
         (project) => project._id === projectObjectId
       );
-      const projectStatus = project ? project.projectStatus : null;
+      const projectDataStatus = project ? project.projectStatus : null;
+      console.log(projectDataStatus);
       console.log(projectStatus);
       // for Validation
       if (!inquiryId && !projectId) {
@@ -56,7 +57,7 @@ const DrawerCreateReport = ({
       }
       const selectedId = inquiryId ?? projectId;
       const selectedType = inquiryId ? "inquiry" : "project";
-      const selectedStatus = salesStatus ?? projectStatus;
+      const selectedStatus = salesStatus ?? projectStatus ?? projectDataStatus;
       const combinedData = {
         ...data,
         reportType: selectedType,
