@@ -50,7 +50,7 @@ const DrawerCreateReport = ({
       const projectDataStatus = project ? project.projectStatus : null;
 
       // for Validation
-      if (!inquiryId && !projectId) {
+      if (!inquiryId && !projectId && !projectObjectId) {
         console.error("No valid inquiryId or projectId provided.");
         return;
       }
