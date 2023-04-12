@@ -48,14 +48,13 @@ const DrawerCreateReport = ({
         (project) => project._id === projectObjectId
       );
       const projectDataStatus = project ? project.projectStatus : null;
-      console.log(projectDataStatus);
-      console.log(projectStatus);
+
       // for Validation
       if (!inquiryId && !projectId) {
         console.error("No valid inquiryId or projectId provided.");
         return;
       }
-      const selectedId = inquiryId ?? projectId;
+      const selectedId = inquiryId ?? projectId ?? projectObjectId;
       const selectedType = inquiryId ? "inquiry" : "project";
       const selectedStatus = salesStatus ?? projectStatus ?? projectDataStatus;
       const combinedData = {
