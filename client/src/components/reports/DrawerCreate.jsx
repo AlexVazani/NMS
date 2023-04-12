@@ -43,9 +43,9 @@ const DrawerCreateReport = ({
   // Create report handle function
   const handleCreateReport = async (data) => {
     try {
-      const { projectId } = data;
+      const { projectObjectId } = data;
       const project = projectsData.data.find(
-        (project) => project._id === projectId
+        (project) => project._id === projectObjectId
       );
       const projectStatus = project ? project.projectStatus : null;
       console.log(projectStatus);
@@ -104,10 +104,10 @@ const DrawerCreateReport = ({
               <InputLabel id="project-select-label">Project</InputLabel>
               <Select
                 labelId="project-select-label"
-                {...register("projectId", { required: true })}
+                {...register("projectObjectId", { required: true })}
                 label="Project"
                 defaultValue=""
-                onChange={(e) => setValue("projectId", e.target.value)}
+                onChange={(e) => setValue("projectObjectId", e.target.value)}
               >
                 {projectsData &&
                   projectsData.data &&
